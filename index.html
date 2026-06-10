@@ -3,210 +3,421 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>GenAI Media Workflow &amp; Benchmark Tools</title>
+  <title>GenAI Media Workbench</title>
   <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <style>
-    * { box-sizing: border-box; }
-    body { margin: 0; background: #f8fafc; font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; color: #111827; }
+    /* ═══════════════════════════════════════════════════════════════════════
+       BESTSELLER ENTERPRISE DESIGN SYSTEM
+       Primary reference: BESTSELLER.com + corporate editorial standards
+       Philosophy: Nordic restraint — monochrome precision, editorial space
+    ═══════════════════════════════════════════════════════════════════════ */
+
+    :root {
+      --bs-black:    #0A0A0A;
+      --bs-ink:      #1A1A1A;
+      --bs-charcoal: #2C2C2C;
+      --bs-mid:      #6B6B6B;
+      --bs-muted:    #9B9B9B;
+      --bs-ash:      #C8C8C8;
+      --bs-smoke:    #E4E4E4;
+      --bs-fog:      #F2F2F2;
+      --bs-page:     #F7F6F4;
+      --bs-white:    #FFFFFF;
+
+      --bs-signal:   #1A3A5C;
+      --bs-signal-l: #EEF3F8;
+      --bs-signal-m: #3D6E9E;
+
+      --bs-ok:       #1A4D30;
+      --bs-ok-l:     #EBF5EF;
+      --bs-warn:     #5C3600;
+      --bs-warn-l:   #FEF7EC;
+      --bs-risk:     #5C1A1A;
+      --bs-risk-l:   #FDEAEA;
+
+      --r:    3px;
+      --rm:   5px;
+      --rl:   8px;
+
+      --font: "Inter", system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bs-page);
+      font-family: var(--font);
+      font-size: 14px;
+      line-height: 1.5;
+      color: var(--bs-ink);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
     button, input, textarea { font-family: inherit; }
 
-    /* ── REQ 1: Sticky nav shell ─────────────────────────── */
+    /* ── Sticky nav ──────────────────────────────────────── */
     .nav-shell {
-      position: sticky; top: 0; z-index: 100;
-      background: #f8fafc;
-      border-bottom: 1px solid #e5e7eb;
-      box-shadow: 0 2px 8px rgba(0,0,0,.06);
+      position: sticky;
+      top: 0;
+      z-index: 200;
+      background: var(--bs-white);
+      border-bottom: 1px solid var(--bs-smoke);
     }
-    .page-content { padding-top: 28px; }
+    .page-content { padding-top: 40px; }
 
-    /* ── App layout ──────────────────────────────────────── */
-    .app { max-width: 1080px; margin: 0 auto; padding: 0 18px 56px; }
+    /* ── App wrapper ────────────────────────────────────── */
+    .app { max-width: 1120px; margin: 0 auto; padding: 0 32px 80px; }
 
-    /* ── Header ──────────────────────────────────────────── */
-    .header { position: relative; padding: 14px 0 16px; background: #f8fafc; }
-    .brand-mark { position: absolute; top: 14px; right: 0; display: flex; flex-direction: column; align-items: center; gap: 5px; }
-    .brand-top { display: flex; align-items: baseline; line-height: 1; }
-    .brand-top strong { font-size: 14px; font-weight: 800; letter-spacing: .12em; }
-    .brand-top span   { font-size: 14px; font-weight: 300; letter-spacing: .22em; }
-    .brand-sub { font-size: 9px; font-weight: 600; letter-spacing: .3em; }
-    .hero-copy { padding-right: 260px; }
-    .hero-title { display: flex; align-items: baseline; line-height: 1; margin-bottom: 8px; }
-    .hero-title .genai {
-      font-size: clamp(32px, 5.5vw, 56px); font-weight: 800; letter-spacing: -.02em;
-      background: linear-gradient(150deg, #1633cc 0%, #1a6ef5 60%, #3b8ff7 100%);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    /* ── Header ─────────────────────────────────────────── */
+    .header {
+      position: relative;
+      padding: 20px 0 0;
+      background: var(--bs-white);
     }
-    .hero-title .media { margin-left: 14px; font-size: clamp(32px, 5.5vw, 56px); font-weight: 300; color: #0b1840; letter-spacing: -.015em; }
-    .hero-sub { font-size: 11px; font-weight: 300; letter-spacing: .38em; color: #0b1840; text-transform: uppercase; margin-bottom: 10px; }
-    .hero-pills { display: flex; align-items: center; flex-wrap: wrap; }
-    .hero-pills span { font-size: 10px; letter-spacing: .2em; color: #4e5f7a; white-space: nowrap; }
-    .sep { width: 1px; height: 12px; background: #a0aabf; margin: 0 16px; }
+    .bs-wordmark {
+      position: absolute;
+      top: 20px;
+      right: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 2px;
+    }
+    .bs-wordmark-main {
+      font-size: 12.5px;
+      font-weight: 700;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--bs-black);
+      line-height: 1;
+    }
+    .bs-wordmark-sub {
+      font-size: 9.5px;
+      font-weight: 600;
+      letter-spacing: .24em;
+      text-transform: uppercase;
+      color: var(--bs-muted);
+      line-height: 1;
+    }
+    .hero-copy { padding-right: 230px; padding-bottom: 18px; }
+    .bs-page-title,
+    .workbench-title {
+      font-size: clamp(28px, 3.9vw, 42px);
+      font-weight: 700;
+      letter-spacing: -.025em;
+      color: var(--bs-black);
+      line-height: 1.04;
+      margin: 0;
+    }
+    .bs-page-title span { font-weight: 300; color: var(--bs-charcoal); }
+    .hero-title-stack {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 4px;
+    }
+    .workbench-title {
+      position: relative;
+      display: inline-block;
+      font-weight: 300;
+      color: var(--bs-charcoal);
+      padding-bottom: 0;
+    }
+    .hero-sub,
+    .hero-pills { display: none; }
+    .sep { width: 1px; height: 10px; background: var(--bs-ash); margin: 0 16px; }
 
-    /* ── Tabs ─────────────────────────────────────────────── */
-    .tabs { display: flex; overflow-x: auto; background: white; border-top: 1px solid #e5e7eb; scrollbar-width: none; }
+    /* ── Primary navigation ─────────────────────────────── */
+    .tabs { display: flex; overflow-x: auto; background: var(--bs-white); border-top: 1px solid var(--bs-smoke); scrollbar-width: none; }
     .tabs::-webkit-scrollbar { display: none; }
-    .tab { font-size: 12px; padding: 11px 18px; background: transparent; border: none; border-bottom: 3px solid transparent; color: #6b7280; cursor: pointer; white-space: nowrap; }
-    .tab.active { color: #0052cc; border-bottom-color: #0052cc; font-weight: 800; }
+    .tab { font-size: 11.5px; font-weight: 500; padding: 13px 22px; background: transparent; border: none; border-bottom: 2px solid transparent; color: var(--bs-muted); cursor: pointer; white-space: nowrap; letter-spacing: .02em; transition: color .15s; }
+    .tab:hover { color: var(--bs-ink); }
+    .tab.active { color: var(--bs-black); border-bottom-color: var(--bs-black); font-weight: 600; }
 
-    /* ── Divider ──────────────────────────────────────────── */
-    .divider { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
-    .divider-badge { font-size: 10.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .09em; padding: 5px 13px; border-radius: 999px; white-space: nowrap; }
-    .divider-line { flex: 1; height: 1px; background: #e5e7eb; }
+    /* ── Section label ──────────────────────────────────── */
+    .divider { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
+    .divider-badge { font-size: 9.5px; font-weight: 600; text-transform: uppercase; letter-spacing: .14em; padding: 4px 12px; border-radius: var(--r); background: var(--bs-ink); color: var(--bs-white); white-space: nowrap; flex-shrink: 0; }
+    .divider-line { flex: 1; height: 1px; background: var(--bs-smoke); }
 
-    /* ── Cards ────────────────────────────────────────────── */
-    .card { border: 1px solid #e5e7eb; border-radius: 14px; overflow: hidden; background: white; margin-bottom: 16px; }
-    .card-pad { padding: 20px 24px; }
+    /* ── Cards & modules ────────────────────────────────── */
+    .card { background: var(--bs-white); border: 1px solid var(--bs-smoke); border-radius: var(--rl); overflow: hidden; margin-bottom: 20px; }
+    .card-pad { padding: 24px 28px; }
+    .module-card { background: var(--bs-white); border: 1px solid var(--bs-smoke); border-radius: var(--rl); overflow: hidden; margin-bottom: 20px; }
+    .module-head { padding: 18px 28px 16px; border-bottom: 1px solid var(--bs-smoke); background: var(--bs-white); display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+    .module-head-sub { font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: .16em; color: var(--bs-muted); margin-bottom: 3px; }
+    .module-head-title { font-size: 13.5px; font-weight: 600; color: var(--bs-black); letter-spacing: -.01em; }
+    .module-body { padding: 24px 28px; }
 
-    /* ── REQ 2: Unified module card (matches Workflow Steps) ─
-       Same visual system: white bg, border, gradient header,
-       consistent padding, radius, shadow, typography
-    ──────────────────────────────────────────────────────── */
-    .module-card { border: 1px solid #e5e7eb; border-radius: 14px; overflow: hidden; background: white; margin-bottom: 16px; }
-    .module-head { padding: 16px 24px 14px; border-bottom: 1px solid #e5e7eb; background: linear-gradient(135deg, #f0f4ff, #fafbff); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
-    .module-head-sub   { font-size: 9.5px; color: #0052cc; font-weight: 800; text-transform: uppercase; letter-spacing: .1em; margin-bottom: 3px; }
-    .module-head-title { font-size: 15px; font-weight: 900; color: #111827; letter-spacing: -.02em; }
-    .module-body { padding: 20px 24px; }
+    /* ── Brand grid ─────────────────────────────────────── */
+    .grid-brands { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; margin-bottom: 5px; }
+    .brand-btn { height: 52px; border-radius: var(--r); border: 1px solid var(--bs-smoke); background: var(--bs-white); display: flex; align-items: center; justify-content: center; cursor: pointer; font-weight: 600; font-size: 10px; color: var(--bs-charcoal); letter-spacing: .02em; transition: border-color .12s, background .12s, color .12s; }
+    .brand-btn:hover { border-color: var(--bs-charcoal); background: var(--bs-fog); }
+    .brand-btn.active { border: 1.5px solid var(--bs-black); background: var(--bs-black); color: var(--bs-white); }
 
-    /* ── Brands ───────────────────────────────────────────── */
-    .grid-brands { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin-bottom: 6px; }
-    .brand-btn { height: 60px; border-radius: 8px; border: 1px solid #e5e7eb; background: white; display: flex; align-items: center; justify-content: center; cursor: pointer; font-weight: 800; font-size: 11px; color: #111827; }
-    .brand-btn.active { border: 2px solid #534ab7; background: #eeedfe; color: #3c3489; box-shadow: 0 0 0 3px #534ab722; }
-
-    /* ── Chips ────────────────────────────────────────────── */
+    /* ── Chips ──────────────────────────────────────────── */
     .chips { display: flex; flex-wrap: wrap; gap: 6px; }
-    .chip { font-size: 11px; padding: 5px 13px; border-radius: 999px; cursor: pointer; border: 1px solid #e5e7eb; background: transparent; color: #6b7280; }
-    .chip.market-active { font-weight: 800; color: #111827; border-color: #9ca3af; background: transparent; }
-    .chip.active { background: #eeedfe; border-color: #534ab7; color: #3c3489; font-weight: 700; }
+    .chip { font-size: 11px; font-weight: 500; padding: 5px 14px; border-radius: var(--r); cursor: pointer; border: 1px solid var(--bs-smoke); background: var(--bs-white); color: var(--bs-mid); letter-spacing: .01em; transition: border-color .12s, color .12s, background .12s; }
+    .chip:hover { border-color: var(--bs-charcoal); color: var(--bs-ink); }
+    .chip.market-active { font-weight: 700; color: var(--bs-black); border-color: var(--bs-charcoal); background: var(--bs-white); }
+    .chip.active { background: var(--bs-black); border-color: var(--bs-black); color: var(--bs-white); font-weight: 600; }
 
-    /* ── Use case cards ───────────────────────────────────── */
-    .use-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(145px, 1fr)); gap: 8px; }
-    .use-card { text-align: left; padding: 12px; border-radius: 10px; cursor: pointer; border: 1px solid #e5e7eb; background: white; }
-    .use-card.active { border: 2px solid #534ab7; background: #eeedfe; }
-    .use-title  { font-size: 11px; font-weight: 800; margin-bottom: 3px; line-height: 1.3; }
-    .use-domain { font-size: 9.5px; color: #6b7280; margin-bottom: 4px; }
-    .use-desc   { font-size: 9.5px; color: #6b7280; line-height: 1.4; opacity: .85; }
+    /* ── Use case grid ──────────────────────────────────── */
+    .use-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(148px, 1fr)); gap: 5px; }
+    .use-card { text-align: left; padding: 13px 14px 11px; border-radius: var(--r); cursor: pointer; border: 1px solid var(--bs-smoke); background: var(--bs-white); transition: border-color .12s, background .12s; }
+    .use-card:hover { border-color: var(--bs-charcoal); }
+    .use-card.active { border: 1.5px solid var(--bs-black); background: var(--bs-fog); }
+    .use-title  { font-size: 11.5px; font-weight: 600; margin-bottom: 3px; line-height: 1.3; color: var(--bs-black); }
+    .use-domain { font-size: 9.5px; color: var(--bs-muted); margin-bottom: 3px; letter-spacing: .03em; }
+    .use-desc   { font-size: 9.5px; color: var(--bs-muted); line-height: 1.4; }
 
-    /* ── Section nav ──────────────────────────────────────── */
-    .sec-nav { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 24px; background: #f0f4ff; border: 1px solid #0052cc30; border-radius: 10px; padding: 8px 12px; }
-    .sec-nav button { padding: 6px 14px; border-radius: 999px; border: 0; background: white; color: #0052cc; cursor: pointer; font-size: 11px; font-weight: 700; }
+    /* ── Section anchor nav ─────────────────────────────── */
+    .sec-nav { display: flex; gap: 2px; flex-wrap: wrap; margin-bottom: 28px; background: var(--bs-fog); border: 1px solid var(--bs-smoke); border-radius: var(--rm); padding: 5px; }
+    .sec-nav button { padding: 6px 14px; border-radius: var(--r); border: 0; background: transparent; color: var(--bs-mid); cursor: pointer; font-size: 11px; font-weight: 500; letter-spacing: .02em; transition: background .1s, color .1s; }
+    .sec-nav button:hover { background: var(--bs-white); color: var(--bs-black); }
 
-    /* ── Workflow strip ───────────────────────────────────── */
-    .workflow-head { padding: 20px 24px 16px; border-bottom: 1px solid #e5e7eb; background: linear-gradient(135deg, #f0f4ff, #fafbff); }
-    .eyebrow { font-size: 9.5px; color: #0052cc; font-weight: 800; text-transform: uppercase; letter-spacing: .1em; margin-bottom: 5px; }
-    .workflow-title { font-size: 28px; font-weight: 900; color: #111827; letter-spacing: -.03em; line-height: 1.1; margin-bottom: 12px; }
-    .pill { display: inline-flex; align-items: center; border-radius: 999px; padding: 4px 10px; font-size: 10px; font-weight: 700; margin-right: 6px; margin-bottom: 4px; }
-    .workflow-strip { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; overflow-x: auto; }
+    /* ── Workflow head ──────────────────────────────────── */
+    .workflow-head { padding: 22px 28px 18px; border-bottom: 1px solid var(--bs-smoke); background: var(--bs-white); }
+    .eyebrow { font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: .18em; color: var(--bs-muted); margin-bottom: 6px; }
+    .workflow-title { font-size: 22px; font-weight: 700; color: var(--bs-black); letter-spacing: -.025em; line-height: 1.15; margin-bottom: 12px; }
+    .pill { display: inline-flex; align-items: center; border-radius: var(--r); padding: 3px 9px; font-size: 10px; font-weight: 500; margin-right: 5px; margin-bottom: 3px; letter-spacing: .02em; }
+
+    /* ── Workflow strip ─────────────────────────────────── */
+    .workflow-strip { background: var(--bs-fog); border: 1px solid var(--bs-smoke); border-radius: var(--rm); padding: 18px; overflow-x: auto; }
     .steps { display: flex; align-items: stretch; min-width: 900px; }
-    .step { width: 190px; background: white; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,.07); overflow: hidden; flex: 0 0 auto; }
-    .step-bar  { height: 4px; }
-    .step-body { padding: 13px 14px 15px; }
-    .step-badge { display: inline-flex; font-size: 9px; font-weight: 900; padding: 3px 8px; border-radius: 999px; margin-bottom: 8px; }
-    .step-name { font-size: 13px; font-weight: 900; margin-bottom: 5px; }
-    .step-tool { font-size: 10px; font-weight: 800; margin-bottom: 7px; }
-    .step-desc { font-size: 10px; color: #6b7280; line-height: 1.5; }
-    .arrow { width: 44px; display: flex; align-items: center; justify-content: center; color: #10b981; font-weight: 900; }
+    .step { width: 190px; background: var(--bs-white); border-radius: var(--r); border: 1px solid var(--bs-smoke); overflow: hidden; flex: 0 0 auto; }
+    .step-bar   { height: 3px; }
+    .step-body  { padding: 13px 14px 15px; }
+    .step-badge { display: inline-block; font-size: 8.5px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; padding: 2px 7px; border-radius: var(--r); margin-bottom: 8px; }
+    .step-name  { font-size: 12px; font-weight: 700; margin-bottom: 4px; color: var(--bs-black); }
+    .step-tool  { font-size: 10px; font-weight: 600; margin-bottom: 5px; }
+    .step-desc  { font-size: 10px; color: var(--bs-mid); line-height: 1.5; }
+    .arrow { width: 32px; display: flex; align-items: center; justify-content: center; color: var(--bs-ash); font-size: 14px; }
 
-    /* ── Table ────────────────────────────────────────────── */
-    table { width: 100%; border-collapse: collapse; font-size: 11px; min-width: 560px; }
-    th { text-align: center; padding: 10px; color: #6b7280; font-size: 10px; font-weight: 600; background: #f8fafc; border-bottom: 1px solid #e5e7eb; }
+    /* ── Table ──────────────────────────────────────────── */
+    table { width: 100%; border-collapse: collapse; font-size: 12px; min-width: 520px; }
+    th { text-align: center; padding: 9px 10px; color: var(--bs-muted); font-size: 9.5px; font-weight: 600; text-transform: uppercase; letter-spacing: .09em; background: var(--bs-fog); border-bottom: 1px solid var(--bs-smoke); }
     th:first-child, td:first-child { text-align: left; }
-    td { text-align: center; padding: 11px 10px; border-bottom: 1px solid #e5e7eb; }
-    .score { border-radius: 999px; padding: 2px 9px; font-size: 10px; font-weight: 800; }
+    td { text-align: center; padding: 10px; border-bottom: 1px solid var(--bs-fog); color: var(--bs-ink); }
+    tr:last-child td { border-bottom: none; }
+    .score { border-radius: var(--r); padding: 2px 8px; font-size: 11px; font-weight: 600; }
 
-    /* ── Feature cards (REQ 2 standardised) ──────────────── */
-    .feature-card { border: 1px solid #e5e7eb; border-radius: 10px; overflow: hidden; margin-bottom: 10px; background: white; }
-    .feature-head { padding: 10px 14px; border-bottom: 1px solid #e5e7eb; display: flex; gap: 10px; align-items: center; background: linear-gradient(135deg, #f8fafc, #ffffff); }
-    .feature-body { padding: 16px 18px; font-size: 11.5px; color: #6b7280; line-height: 1.7; }
+    /* ── Feature cards ──────────────────────────────────── */
+    .feature-card { border: 1px solid var(--bs-smoke); border-radius: var(--r); overflow: hidden; margin-bottom: 7px; background: var(--bs-white); }
+    .feature-head { padding: 10px 16px; border-bottom: 1px solid var(--bs-smoke); display: flex; gap: 10px; align-items: center; background: var(--bs-fog); }
+    .feature-body { padding: 14px 18px; font-size: 12px; color: var(--bs-mid); line-height: 1.7; }
 
-    /* ── Tips (REQ 2 standardised) ───────────────────────── */
-    .tips-list { display: flex; flex-direction: column; gap: 8px; }
-    .tip-row { display: flex; gap: 14px; align-items: flex-start; padding: 12px 16px; background: #f8fafc; border: 1px solid #e5e7eb; border-radius: 10px; font-size: 12px; line-height: 1.7; }
-    .tip-label { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; color: #0052cc; min-width: 100px; padding-top: 2px; flex-shrink: 0; }
+    /* ── Tips ───────────────────────────────────────────── */
+    .tips-list { display: flex; flex-direction: column; border: 1px solid var(--bs-smoke); border-radius: var(--r); overflow: hidden; }
+    .tip-row { display: flex; align-items: stretch; font-size: 12.5px; line-height: 1.65; border-bottom: 1px solid var(--bs-smoke); }
+    .tip-row:last-child { border-bottom: none; }
+    .tip-label { font-size: 9.5px; font-weight: 600; text-transform: uppercase; letter-spacing: .1em; color: var(--bs-ink); background: var(--bs-fog); min-width: 120px; padding: 14px 16px; flex-shrink: 0; display: flex; align-items: center; border-right: 1px solid var(--bs-smoke); }
+    .tip-row > div:last-child { padding: 14px 18px; color: var(--bs-charcoal); flex: 1; }
 
-    /* ── Legal (REQ 2 standardised) ──────────────────────── */
-    .legal-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-    .legal-card { border-radius: 12px; overflow: hidden; border: 1px solid #e5e7eb; background: white; }
-    .legal-head { padding: 14px 16px 12px; background: linear-gradient(135deg, #f0f4ff, #fafbff); border-bottom: 1px solid #e5e7eb; }
-    .legal-head-label { font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: .1em; margin-bottom: 3px; }
-    .legal-head-title { font-size: 14px; font-weight: 900; color: #111827; }
-    .legal-body { padding: 14px 16px; font-size: 11.5px; color: #374151; line-height: 1.65; }
-    .legal-item { display: flex; gap: 10px; margin-bottom: 10px; align-items: flex-start; }
-    .legal-dot  { width: 6px; height: 6px; border-radius: 50%; flex: 0 0 auto; margin-top: 6px; }
-    .notice { margin-top: 16px; padding: 14px 18px; background: #f8fafc; border: 1px solid #e5e7eb; border-left: 4px solid #003884; border-radius: 8px; }
-    .notice-title { font-size: 10px; font-weight: 900; color: #003884; text-transform: uppercase; letter-spacing: .1em; margin-bottom: 6px; }
-    .notice p { margin: 0; font-size: 11px; color: #374151; line-height: 1.85; }
+    /* ── Legal ──────────────────────────────────────────── */
+    .legal-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .legal-card { border-radius: var(--r); overflow: hidden; border: 1px solid var(--bs-smoke); background: var(--bs-white); }
+    .legal-head { padding: 12px 16px 10px; border-bottom: 1px solid var(--bs-smoke); background: var(--bs-fog); }
+    .legal-head-label { font-size: 8.5px; font-weight: 600; text-transform: uppercase; letter-spacing: .14em; margin-bottom: 2px; }
+    .legal-head-title { font-size: 13px; font-weight: 700; color: var(--bs-black); }
+    .legal-body { padding: 14px 16px; font-size: 12px; color: var(--bs-charcoal); line-height: 1.6; }
+    .legal-item { display: flex; gap: 10px; margin-bottom: 8px; align-items: flex-start; }
+    .legal-dot  { width: 5px; height: 5px; border-radius: 50%; flex: 0 0 auto; margin-top: 7px; }
+    .notice { margin-top: 14px; padding: 12px 16px; background: var(--bs-fog); border: 1px solid var(--bs-smoke); border-left: 3px solid var(--bs-charcoal); border-radius: var(--r); }
+    .notice-title { font-size: 9px; font-weight: 700; color: var(--bs-charcoal); text-transform: uppercase; letter-spacing: .14em; margin-bottom: 5px; }
+    .notice p { margin: 0; font-size: 11px; color: var(--bs-mid); line-height: 1.7; }
 
-    /* ── Benchmark inner tabs ─────────────────────────────── */
-    .bench-inner-tabs { display: flex; border-bottom: 1px solid #e5e7eb; background: #f8fafc; overflow-x: auto; scrollbar-width: none; }
+    /* ── Bench inner tabs ───────────────────────────────── */
+    .bench-inner-tabs { display: flex; border-bottom: 1px solid var(--bs-smoke); background: var(--bs-fog); overflow-x: auto; scrollbar-width: none; }
     .bench-inner-tabs::-webkit-scrollbar { display: none; }
-    .bench-inner-tab { font-size: 11px; padding: 10px 16px; background: transparent; border: none; border-bottom: 2px solid transparent; color: #6b7280; cursor: pointer; white-space: nowrap; font-weight: 600; }
-    .bench-inner-tab.active { color: #0052cc; border-bottom-color: #0052cc; font-weight: 800; background: white; }
-    .bench-tab-content { padding: 16px; }
+    .bench-inner-tab { font-size: 11px; font-weight: 500; padding: 10px 18px; background: transparent; border: none; border-bottom: 2px solid transparent; color: var(--bs-muted); cursor: pointer; white-space: nowrap; letter-spacing: .02em; transition: color .12s; }
+    .bench-inner-tab:hover { color: var(--bs-ink); }
+    .bench-inner-tab.active { color: var(--bs-black); border-bottom-color: var(--bs-black); font-weight: 600; background: var(--bs-white); }
+    .bench-tab-content { padding: 20px; }
 
-    /* ── Model cards ──────────────────────────────────────── */
-    .model-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
-    .model-card { background: #fafafa; border: 1.5px solid #e5e7eb; border-radius: 8px; padding: 10px 12px; cursor: pointer; }
-    .model-card:hover { border-color: #bfdbfe; }
-    .model-card.active { background: #f0f7ff; border-color: #93c5fd; }
-    .model-link { display: inline-flex; align-items: center; gap: 3px; font-size: 9px; color: #0052cc; font-weight: 700; text-decoration: none; margin-top: 5px; opacity: .75; }
-    .model-link:hover { opacity: 1; text-decoration: underline; }
-    .check { width: 16px; height: 16px; border-radius: 4px; border: 1.5px solid #d1d5db; display: inline-flex; align-items: center; justify-content: center; font-size: 11px; flex-shrink: 0; }
-    .check.active { background: #0052cc; color: white; border-color: #0052cc; }
-    .radio-circle { width: 16px; height: 16px; border-radius: 50%; border: 1.5px solid #d1d5db; display: inline-flex; align-items: center; justify-content: center; font-size: 8px; flex-shrink: 0; }
-    .radio-circle.active { background: #0052cc; color: white; border-color: #0052cc; }
+    /* ── Model cards ────────────────────────────────────── */
+    .model-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
+    .model-card { background: var(--bs-white); border: 1px solid var(--bs-smoke); border-radius: var(--r); padding: 12px 14px; cursor: pointer; transition: border-color .12s; }
+    .model-card:hover { border-color: var(--bs-charcoal); }
+    .model-card.active { background: var(--bs-fog); border-color: var(--bs-black); border-width: 1.5px; }
+    .model-link { display: inline-flex; align-items: center; gap: 3px; font-size: 9.5px; color: var(--bs-signal-m); font-weight: 500; text-decoration: none; margin-top: 6px; letter-spacing: .01em; }
+    .model-link:hover { text-decoration: underline; }
 
-    /* ── Criteria ─────────────────────────────────────────── */
-    .criteria-group { border: 1px solid #e5e7eb; border-radius: 10px; overflow: hidden; margin-bottom: 10px; background: white; }
-    .criteria-group-head { padding: 10px 14px; background: #f8fafc; border-bottom: 1px solid #e5e7eb; display: flex; align-items: center; justify-content: space-between; cursor: pointer; }
-    .criteria-group-title { font-size: 12px; font-weight: 800; color: #111827; }
-    .criteria-weight { font-size: 10px; font-weight: 700; color: #0052cc; background: #e6f0ff; border-radius: 999px; padding: 2px 8px; }
-    .criteria-items { padding: 10px 14px; display: flex; flex-direction: column; gap: 6px; }
-    .criteria-item { display: flex; align-items: center; gap: 10px; padding: 7px 10px; border-radius: 7px; cursor: pointer; border: 1px solid #e5e7eb; background: #fafafa; font-size: 11.5px; }
-    .criteria-item.active { background: #f0f7ff; border-color: #93c5fd; color: #1d4ed8; font-weight: 600; }
+    /* ── Selection controls ─────────────────────────────── */
+    .check { width: 15px; height: 15px; border-radius: 2px; border: 1.5px solid var(--bs-ash); display: inline-flex; align-items: center; justify-content: center; font-size: 10px; flex-shrink: 0; transition: background .1s, border-color .1s; }
+    .check.active { background: var(--bs-black); color: var(--bs-white); border-color: var(--bs-black); }
+    .radio-circle { width: 15px; height: 15px; border-radius: 50%; border: 1.5px solid var(--bs-ash); display: inline-flex; align-items: center; justify-content: center; font-size: 8px; flex-shrink: 0; }
+    .radio-circle.active { background: var(--bs-black); color: var(--bs-white); border-color: var(--bs-black); }
 
-    /* ── Use case list ────────────────────────────────────── */
-    .bench-usecase-grid { display: grid; grid-template-columns: 1fr; gap: 6px; }
-    .bench-usecase-item { display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px; border-radius: 8px; cursor: pointer; border: 1px solid #e5e7eb; background: #fafafa; }
-    .bench-usecase-item.active { background: #f0f7ff; border-color: #93c5fd; }
-    .bench-usecase-text strong { font-size: 11.5px; font-weight: 800; display: block; margin-bottom: 2px; }
-    .bench-usecase-text span   { font-size: 10px; color: #6b7280; line-height: 1.4; }
+    /* ── Criteria ───────────────────────────────────────── */
+    .criteria-group { border: 1px solid var(--bs-smoke); border-radius: var(--r); overflow: hidden; margin-bottom: 7px; background: var(--bs-white); }
+    .criteria-group-head { padding: 10px 16px; background: var(--bs-fog); border-bottom: 1px solid var(--bs-smoke); display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: background .1s; }
+    .criteria-group-head:hover { background: var(--bs-smoke); }
+    .criteria-group-title { font-size: 12px; font-weight: 600; color: var(--bs-black); }
+    .criteria-weight { font-size: 10px; font-weight: 600; color: var(--bs-ink); background: var(--bs-smoke); border-radius: var(--r); padding: 2px 7px; }
+    .criteria-items { padding: 10px 16px; display: flex; flex-direction: column; gap: 4px; }
+    .criteria-item { display: flex; align-items: center; gap: 10px; padding: 7px 10px; border-radius: var(--r); cursor: pointer; border: 1px solid var(--bs-smoke); background: var(--bs-white); font-size: 12px; color: var(--bs-charcoal); transition: border-color .1s; }
+    .criteria-item:hover { border-color: var(--bs-charcoal); }
+    .criteria-item.active { background: var(--bs-fog); border-color: var(--bs-black); color: var(--bs-black); font-weight: 500; }
 
-    /* ── Context ──────────────────────────────────────────── */
-    .context-section { margin-bottom: 20px; }
-    .context-label   { font-size: 12px; font-weight: 800; color: #111827; margin-bottom: 10px; }
-    .volume-chips    { display: flex; flex-wrap: wrap; gap: 6px; }
-    .context-textarea { width: 100%; border: 1px solid #e5e7eb; border-radius: 8px; padding: 10px 12px; font-size: 12px; color: #374151; resize: vertical; min-height: 90px; outline: none; line-height: 1.6; }
-    .context-textarea:focus { border-color: #93c5fd; box-shadow: 0 0 0 3px #dbeafe; }
+    /* ── Use case list ──────────────────────────────────── */
+    .bench-usecase-grid { display: grid; grid-template-columns: 1fr; gap: 4px; }
+    .bench-usecase-item { display: flex; align-items: flex-start; gap: 12px; padding: 12px 14px; border-radius: var(--r); cursor: pointer; border: 1px solid var(--bs-smoke); background: var(--bs-white); transition: border-color .1s; }
+    .bench-usecase-item:hover { border-color: var(--bs-charcoal); }
+    .bench-usecase-item.active { background: var(--bs-fog); border-color: var(--bs-black); }
+    .bench-usecase-text strong { font-size: 12px; font-weight: 600; display: block; margin-bottom: 2px; color: var(--bs-black); }
+    .bench-usecase-text span   { font-size: 11px; color: var(--bs-mid); line-height: 1.4; }
 
-    /* ── Prompt box ───────────────────────────────────────── */
-    .prompt-box { background: #0f172a; border-radius: 10px; padding: 20px; font-size: 11px; color: #e2e8f0; line-height: 1.8; font-family: 'Menlo','Consolas',monospace; white-space: pre-wrap; word-break: break-word; min-height: 300px; }
-    .copy-btn { background: #0052cc; color: white; border: none; border-radius: 7px; padding: 9px 20px; font-size: 12px; font-weight: 800; cursor: pointer; margin-bottom: 14px; }
-    .copy-btn:hover { background: #003fa3; }
-    .copy-btn.copied { background: #0f6e56; }
+    /* ── Context ────────────────────────────────────────── */
+    .context-section { margin-bottom: 22px; }
+    .context-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .1em; color: var(--bs-ink); margin-bottom: 10px; }
+    .volume-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+    .context-textarea { width: 100%; border: 1px solid var(--bs-smoke); border-radius: var(--r); padding: 10px 14px; font-size: 13px; color: var(--bs-ink); resize: vertical; min-height: 90px; outline: none; line-height: 1.6; background: var(--bs-white); transition: border-color .12s; }
+    .context-textarea:focus { border-color: var(--bs-charcoal); box-shadow: 0 0 0 3px rgba(0,0,0,.05); }
 
-    /* ── Results ──────────────────────────────────────────── */
-    .result-card { border: 1px solid #e5e7eb; border-radius: 12px; background: white; overflow: hidden; margin-bottom: 12px; }
-    .result-head { padding: 12px 16px 10px; border-bottom: 1px solid #e5e7eb; background: #fafafa; display: flex; justify-content: space-between; align-items: center; }
-    .bar { height: 4px; background: #e5e7eb; border-radius: 4px; overflow: hidden; }
-    .bar div { height: 100%; border-radius: 4px; }
+    /* ── Prompt ─────────────────────────────────────────── */
+    .prompt-box { background: #0F0F0F; border-radius: var(--r); padding: 20px 24px; font-size: 11.5px; color: #C0C0C0; line-height: 1.8; font-family: 'Menlo','Consolas','Courier New',monospace; white-space: pre-wrap; word-break: break-word; min-height: 300px; }
+    .copy-btn { background: var(--bs-black); color: var(--bs-white); border: none; border-radius: var(--r); padding: 10px 22px; font-size: 12px; font-weight: 600; cursor: pointer; margin-bottom: 16px; letter-spacing: .04em; transition: background .12s; }
+    .copy-btn:hover { background: var(--bs-charcoal); }
+    .copy-btn.copied { background: var(--bs-ok); }
 
-    /* ── Tools library ────────────────────────────────────── */
-    .tool-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
-    .tool-card { background: white; border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden; }
-    .tool-head { padding: 14px 16px 12px; border-bottom: 1px solid #e5e7eb; }
-    .tag { border-radius: 4px; padding: 2px 7px; font-size: 9px; font-weight: 900; }
+    /* ── Results ────────────────────────────────────────── */
+    .result-card { border: 1px solid var(--bs-smoke); border-radius: var(--r); background: var(--bs-white); overflow: hidden; margin-bottom: 10px; }
+    .result-head { padding: 14px 18px 12px; border-bottom: 1px solid var(--bs-smoke); background: var(--bs-fog); display: flex; justify-content: space-between; align-items: center; }
+    .bar { height: 3px; background: var(--bs-smoke); border-radius: 2px; overflow: hidden; }
+    .bar div { height: 100%; border-radius: 2px; }
 
-    /* ── Responsive ───────────────────────────────────────── */
+    /* ── Tools library ──────────────────────────────────── */
+    .tool-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 8px; }
+    .tool-card { background: var(--bs-white); border: 1px solid var(--bs-smoke); border-radius: var(--r); overflow: hidden; transition: border-color .12s; }
+    .tool-card:hover { border-color: var(--bs-charcoal); }
+    .tool-head { padding: 14px 18px 12px; border-bottom: 1px solid var(--bs-smoke); background: var(--bs-fog); }
+    .tag { border-radius: var(--r); padding: 2px 7px; font-size: 9px; font-weight: 600; letter-spacing: .04em; }
+
+    /* ── Bench run button ───────────────────────────────── */
+    .bench-run-btn { background: var(--bs-black); color: var(--bs-white); border: none; border-radius: var(--r); padding: 8px 18px; font-size: 11.5px; font-weight: 600; letter-spacing: .04em; cursor: pointer; transition: background .12s; }
+    .bench-run-btn:hover:not(:disabled) { background: var(--bs-charcoal); }
+    .bench-run-btn:disabled { background: var(--bs-smoke); color: var(--bs-muted); cursor: not-allowed; }
+
+
+
+    /* ── Login entry page ───────────────────────────────── */
+    .login-page {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 48px 32px 36px;
+      background: var(--bs-page);
+      position: relative;
+    }
+    .login-hero {
+      width: 100%;
+      max-width: 720px;
+      text-align: center;
+      margin-bottom: 34px;
+    }
+    .login-title-stack {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      margin-bottom: 16px;
+    }
+    .login-title-stack .bs-page-title,
+    .login-title-stack .workbench-title {
+      text-align: center;
+    }
+    .login-teaser {
+      font-size: 10.5px;
+      font-weight: 600;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: var(--bs-muted);
+    }
+    .login-card {
+      width: 100%;
+      max-width: 420px;
+      background: var(--bs-white);
+      border: 1px solid var(--bs-smoke);
+      border-radius: var(--rl);
+      padding: 28px;
+      box-shadow: 0 18px 60px rgba(10,10,10,.04);
+    }
+    .login-field {
+      margin-bottom: 14px;
+    }
+    .login-label {
+      display: block;
+      font-size: 9.5px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .14em;
+      color: var(--bs-ink);
+      margin-bottom: 8px;
+    }
+    .login-input {
+      width: 100%;
+      height: 44px;
+      border: 1px solid var(--bs-smoke);
+      border-radius: var(--r);
+      background: var(--bs-white);
+      color: var(--bs-ink);
+      font-size: 13px;
+      padding: 0 14px;
+      outline: none;
+      transition: border-color .12s, box-shadow .12s;
+    }
+    .login-input:focus {
+      border-color: var(--bs-charcoal);
+      box-shadow: 0 0 0 3px rgba(0,0,0,.05);
+    }
+    .login-button {
+      width: 100%;
+      height: 44px;
+      margin-top: 8px;
+      border: 0;
+      border-radius: var(--r);
+      background: var(--bs-black);
+      color: var(--bs-white);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background .12s;
+    }
+    .login-button:hover { background: var(--bs-charcoal); }
+    .login-footer {
+      position: absolute;
+      left: 32px;
+      right: 32px;
+      bottom: 28px;
+      text-align: center;
+      font-size: 9.5px;
+      font-weight: 600;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: var(--bs-muted);
+    }
+
+    /* ── Responsive ─────────────────────────────────────── */
     @media (max-width: 800px) {
-      .brand-mark { position: static; align-items: flex-start; margin-bottom: 10px; }
-      .hero-copy  { padding-right: 0; }
+      .app { padding: 0 16px 60px; }
+      .bs-wordmark { position: static; align-items: flex-start; margin-bottom: 12px; }
+      .hero-copy   { padding-right: 0; }
       .hero-pills .sep { display: none; }
-      .hero-pills { gap: 10px; }
+      .hero-pills  { gap: 10px; }
       .grid-brands { grid-template-columns: repeat(3, 1fr); }
       .legal-grid  { grid-template-columns: 1fr; }
       .model-grid  { grid-template-columns: 1fr; }
+      .tab { padding: 12px 14px; font-size: 11px; }
+    }
+    @media (max-width: 500px) {
+      .grid-brands { grid-template-columns: repeat(2, 1fr); }
+      .use-grid    { grid-template-columns: repeat(2, 1fr); }
     }
   </style>
 </head>
@@ -216,8 +427,8 @@
     const { useState } = React;
 
     const C = {
-      blue:"#0052CC", indigo:"#534AB7", indigoL:"#EEEDFE", indigoDark:"#3C3489",
-      green:"#0F6E56", greenL:"#E1F5EE", amber:"#B45309"
+      blue:"var(--bs-black)", indigo:"var(--bs-charcoal)", indigoL:"var(--bs-fog)", indigoDark:"var(--bs-ink)",
+      green:"var(--bs-ok)", greenL:"var(--bs-ok-l)", amber:"var(--bs-warn)"
     };
 
     const BRANDS  = ["JACK & JONES","VERO MODA","ONLY","Selected","name it","PIECES","VILA",".OBJECT","NOISY MAY","Y.A.S","MAMALICIOUS","ONLY & SONS","ONLY PLAY","JDY","JJXX","KIDS ONLY","ONLY CARMAKOMA","JUNAROSE","Lil' Atelier","LMTD","BALMOHK"];
@@ -484,64 +695,85 @@
 
     const LIB_FILTERS = ["All","Image","Video","Platform","Post-Prod"];
 
+    const TOOL_PRIORITY = [
+      "Adobe Firefly", "Adobe Express", "Figma Weave", "Google Gemini", "ChatGPT Images",
+      "Google Veo", "Sora 2", "Microsoft Copilot (M365)", "Copilot Video",
+      "Adobe Firefly Image 4", "Firefly 4 Video Model", "Veo 3.1", "Runway Gen-4.5", "Runway Gen 4.5 Video",
+      "GPT Image 2", "Imagen 4 Ultra", "MAI-Image-2", "MAI-Image-2-Efficient", "Imagen 4 Fast",
+      "Gemini 3 Pro Image", "Gemini 3.1 Flash Image", "Midjourney Pro", "Midjourney Video V1",
+      "Flux 2 Max", "Flux 2 Pro", "Flux 1.1 Pro", "Stable Image Ultra", "Stable Diffusion 3", "Stable Diffusion 3.5",
+      "DALL\u00b73", "Ideogram V3", "Recraft V4", "Seedream 4.5", "Luma Photon", "Bria 4B", "Nvidia Sana",
+      "Kling 3", "Kling 2.6 Pro", "Kling 2.5 Turbo", "Ray3 HDR", "Ray3", "Ray2", "Ray3.14", "Ray3 HDR.14",
+      "Veo 3", "Veo 3.1 Fast", "Veo 2", "PixVerse 6", "Seedance 2.0", "Minimax Hailuo 02", "Luma Ray",
+      "Flair AI", "Flair AI Video", "LetzAI Pro", "Letz AI Video", "Firefly Image 3",
+      "Gemini 3.1 Nano Banana 2", "Gemini 3 Nano Banana Pro", "Topaz Gigapixel"
+    ];
+
+    function rankedTools(list) {
+      return [...list].sort((a,b)=>{
+        const ai = TOOL_PRIORITY.indexOf(a[0]);
+        const bi = TOOL_PRIORITY.indexOf(b[0]);
+        const ar = ai === -1 ? 999 : ai;
+        const br = bi === -1 ? 999 : bi;
+        return ar - br;
+      });
+    }
+
+    // ════════════════════════════════════════════════════════
     // ════════════════════════════════════════════════════════
     // SHARED UTILITIES
     // ════════════════════════════════════════════════════════
-    function Divider({label,color="#0052CC"}) {
+    function Divider({label}) {
       return <div className="divider">
-        <span className="divider-badge" style={{color,background:color+"14",border:`1px solid ${color}35`}}>{label}</span>
+        <span className="divider-badge">{label}</span>
         <div className="divider-line"/>
       </div>;
     }
-    function Pill({label,bg,fg}) { return <span className="pill" style={{background:bg,color:fg}}>{label}</span>; }
+    function Pill({label,bg,fg}) {
+      return <span className="pill" style={{background:bg,color:fg}}>{label}</span>;
+    }
     function scoreStyle(v) {
-      if(v>=85) return {background:"#E1F5EE",color:"#085041"};
-      if(v>=70) return {background:"#FEF3C7",color:"#633806"};
-      return {background:"#FAECE7",color:"#712B13"};
+      if(v>=85) return {background:"var(--bs-ok-l)",  color:"var(--bs-ok)"};
+      if(v>=70) return {background:"var(--bs-warn-l)",color:"var(--bs-warn)"};
+      return      {background:"var(--bs-risk-l)",color:"var(--bs-risk)"};
     }
 
-    // REQ 3/4: Adobe uses same neutral blue as all other groups (no red/orange).
-    // ENTERPRISE badge: purple, matching Microsoft Copilot (M365) exactly.
-    // REQ 6: Learn more link on every model card.
     function ModelCard({m, selected, toggle}) {
       const isActive = selected.includes(m.id);
-      const isEnt = m.tag==="ENTERPRISE";
-      const tagBg    = isEnt ? "#F5F3FF" : "#EFF6FF";
-      const tagColor = isEnt ? "#5B21B6" : "#1D4ED8";
-      const tagBdr   = isEnt ? "#DDD6FE" : "#BFDBFE";
+      const isEnt = m.tag === "ENTERPRISE";
+      const tagBg    = isEnt ? "var(--bs-smoke)" : "var(--bs-fog)";
+      const tagColor = isEnt ? "var(--bs-black)"  : "var(--bs-mid)";
       return <div className={"model-card "+(isActive?"active":"")} onClick={()=>toggle(m.id)}>
         <div style={{display:"flex",justifyContent:"space-between",gap:8}}>
           <div>
-            <strong style={{fontSize:11}}>{m.name}</strong>
-            <div style={{fontSize:10,color:"#0052CC",fontWeight:800,marginTop:2}}>{m.vendor}</div>
+            <strong style={{fontSize:12,color:"var(--bs-black)",fontWeight:600}}>{m.name}</strong>
+            <div style={{fontSize:10,color:"var(--bs-muted)",marginTop:2,letterSpacing:".02em"}}>{m.vendor}</div>
           </div>
-          <span className={"check "+(isActive?"active":"")}>{isActive?"✓":""}</span>
+          <span className={"check "+(isActive?"active":"")}>{isActive?"\u2713":""}</span>
         </div>
-        <div style={{marginTop:6,display:"flex",alignItems:"center",gap:8,flexWrap:"wrap"}}>
-          <span className="tag" style={{background:tagBg,color:tagColor,border:`1px solid ${tagBdr}`}}>{m.tag}</span>
+        <div style={{marginTop:7,display:"flex",alignItems:"center",gap:8,flexWrap:"wrap"}}>
+          <span className="tag" style={{background:tagBg,color:tagColor}}>{m.tag}</span>
           {m.url && <a href={m.url} target="_blank" rel="noopener noreferrer" className="model-link" onClick={e=>e.stopPropagation()}>Learn more ↗</a>}
         </div>
       </div>;
     }
 
-    // REQ 3/4: "AI Models" replaces "Standalone"; Adobe divider uses same blue (neutral)
     function ModelsTabGeneric({standalone, adobe, figma, selected, toggle}) {
       return <div className="bench-tab-content">
-        <Divider label="AI Models" color="#0052CC"/>
-        <div className="model-grid" style={{marginBottom:20}}>
+        <Divider label="AI Models"/>
+        <div className="model-grid" style={{marginBottom:22}}>
           {standalone.map(m=><ModelCard key={m.id} m={m} selected={selected} toggle={toggle}/>)}
         </div>
-        <Divider label="Adobe Ecosystem Models" color="#0052CC"/>
-        <div className="model-grid" style={{marginBottom:20}}>
+        <Divider label="Adobe Ecosystem Models"/>
+        <div className="model-grid" style={{marginBottom:22}}>
           {adobe.map(m=><ModelCard key={m.id} m={m} selected={selected} toggle={toggle}/>)}
         </div>
-        <Divider label="Figma Weave — Verified by Figma" color="#0052CC"/>
+        <Divider label="Figma Weave — Verified by Figma"/>
         <div className="model-grid">
           {figma.map(m=><ModelCard key={m.id} m={m} selected={selected} toggle={toggle}/>)}
         </div>
       </div>;
     }
-
     function CriteriaTabGeneric({criteria, selectedCriteria, toggleCriterion}) {
       const toggleAll = (group) => {
         const ids = group.items.map(i=>i.id);
@@ -632,7 +864,7 @@
       const selM = allModels.filter(m=>selectedModels.includes(m.id));
       const ucObj = useCases.find(u=>u.id===selectedUseCase);
       return <div style={{padding:20}}>
-        <Divider label="Benchmark Configuration Summary" color="#0052CC"/>
+        <Divider label="Benchmark Configuration Summary"/>
         <div style={{display:"flex",flexWrap:"wrap",gap:8,marginBottom:16}}>
           <span className="pill" style={{background:"#EFF6FF",color:"#1D4ED8"}}>{selM.length>0?`${selM.length} models selected`:"No models selected"}</span>
           <span className="pill" style={{background:"#F5F3FF",color:"#5B21B6"}}>{selectedCriteria.length>0?`${selectedCriteria.length} criteria selected`:"No criteria selected"}</span>
@@ -759,50 +991,42 @@
     // ════════════════════════════════════════════════════════
     function Header() {
       return <header className="header">
-        <div className="brand-mark">
-          <div className="brand-top"><strong>BESTSELLER</strong><span>TECH</span></div>
-          <div className="brand-sub">TECH CREATIVE SOLUTIONS</div>
+        <div className="bs-wordmark">
+          <div className="bs-wordmark-main">BESTSELLER TECH</div>
+          <div className="bs-wordmark-sub">CREATIVE SOLUTIONS</div>
         </div>
         <div className="hero-copy">
-          <div className="hero-title"><span className="genai">GenAI</span><span className="media">Media</span></div>
-          <div className="hero-sub">Workflow &amp; Benchmark Tools</div>
-          <div className="hero-pills">
-            <span>AI WORKFLOW GUIDANCE</span><i className="sep"/>
-            <span>AI MODELS COMPARISON</span><i className="sep"/>
-            <span>AI TOOLS GOVERNANCE</span>
+          <div className="hero-title-stack">
+            <div className="bs-page-title">GenAI<span> Media</span></div>
+            <div className="workbench-title">Workbench</div>
           </div>
         </div>
       </header>;
     }
 
-    // ════════════════════════════════════════════════════════
     // ANALYZER — Use Case → Workflow
-    // REQ 2: all info modules match Workflow Steps card style
-    // ════════════════════════════════════════════════════════
     function Analyzer() {
       const [brand,setBrand]   = useState(null);
       const [market,setMarket] = useState("Global");
       const [uc,setUC]         = useState("lookbook");
       const w = WF[uc];
-      const colors = ["#6366F1","#10B981","#F59E0B","#EC4899"];
+      const stepColors = ["#1A1A1A","#3C3C3C","#6B6B6B","#9B9B9B"];
 
       return <main>
-        <section style={{marginBottom:24}}>
-          <Divider label="Brand" color="#534AB7"/>
+        <section style={{marginBottom:32}}>
+          <Divider label="Brand"/>
           {[0,7,14].map(start=><div className="grid-brands" key={start}>
             {BRANDS.slice(start,start+7).map(b=><button key={b} className={"brand-btn "+(brand===b?"active":"")} onClick={()=>setBrand(brand===b?null:b)}>{b}</button>)}
           </div>)}
         </section>
-
-        <section style={{marginBottom:24}}>
-          <Divider label="Market" color="#534AB7"/>
+        <section style={{marginBottom:32}}>
+          <Divider label="Market"/>
           <div className="chips">
             {MARKETS.map(m=><button key={m} className={"chip "+(market===m?"market-active":"")} onClick={()=>setMarket(m)}>{m}</button>)}
           </div>
         </section>
-
-        <section style={{marginBottom:24}}>
-          <Divider label="Use Case" color="#534AB7"/>
+        <section style={{marginBottom:32}}>
+          <Divider label="Use Case"/>
           <div className="use-grid">
             {USE_CASES.map(u=><button key={u.id} className={"use-card "+(uc===u.id?"active":"")} onClick={()=>setUC(u.id)}>
               <div className="use-title">{u.label}</div>
@@ -811,20 +1035,17 @@
             </button>)}
           </div>
         </section>
-
         <nav className="sec-nav">
           {["Workflow","Tools Benchmark Info","Workflow Tools Features","AI Tips","AI Legal Guidelines"].map(x=><button key={x} onClick={()=>document.getElementById(x).scrollIntoView({behavior:"smooth",block:"start"})}>{x}</button>)}
         </nav>
-
-        {/* Workflow Steps — reference component */}
         <section className="card" id="Workflow">
           <div className="workflow-head">
             <div className="eyebrow">Selected Workflow</div>
             <div className="workflow-title">{w.label}</div>
             <div>
-              {brand && <Pill label={brand} bg="#EEEDFE" fg="#3C3489"/>}
-              {market!=="Global" && <Pill label={market} bg="#E6F1FB" fg="#0C447C"/>}
-              {w.tools.map(t=><Pill key={t} label={t} bg="#0052CC12" fg="#0052CC"/>)}
+              {brand && <Pill label={brand} bg="var(--bs-fog)" fg="var(--bs-black)"/>}
+              {market!=="Global" && <Pill label={market} bg="var(--bs-signal-l)" fg="var(--bs-signal)"/>}
+              {w.tools.map(t=><Pill key={t} label={t} bg="var(--bs-smoke)" fg="var(--bs-charcoal)"/>)}
             </div>
           </div>
           <div className="card-pad">
@@ -833,11 +1054,11 @@
               <div className="steps">
                 {w.steps.map((s,i)=><React.Fragment key={s[0]}>
                   <div className="step">
-                    <div className="step-bar" style={{background:colors[i%colors.length]}}/>
+                    <div className="step-bar" style={{background:stepColors[i%stepColors.length]}}/>
                     <div className="step-body">
-                      <div className="step-badge" style={{background:colors[i%colors.length]+"18",color:colors[i%colors.length]}}>STEP {i+1}</div>
+                      <div className="step-badge" style={{background:"var(--bs-fog)",color:stepColors[i%stepColors.length]}}>STEP {i+1}</div>
                       <div className="step-name">{s[0]}</div>
-                      <div className="step-tool" style={{color:colors[i%colors.length]}}>{s[1]}</div>
+                      <div className="step-tool" style={{color:stepColors[i%stepColors.length]}}>{s[1]}</div>
                       <div className="step-desc">{s[2]}</div>
                     </div>
                   </div>
@@ -847,16 +1068,11 @@
             </div>
           </div>
         </section>
-
-        {/* REQ 2: Tools Benchmark Info — module-card style */}
         <section className="module-card" id="Tools Benchmark Info">
           <div className="module-head">
-            <div>
-              <div className="module-head-sub">Performance Overview</div>
-              <div className="module-head-title">Tools Benchmark Info</div>
-            </div>
-            <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
-              {w.tools.map(t=><Pill key={t} label={t} bg="#0052CC12" fg="#0052CC"/>)}
+            <div><div className="module-head-sub">Performance Overview</div><div className="module-head-title">Tools Benchmark Info</div></div>
+            <div style={{display:"flex",gap:5,flexWrap:"wrap"}}>
+              {w.tools.map(t=><Pill key={t} label={t} bg="var(--bs-smoke)" fg="var(--bs-charcoal)"/>)}
             </div>
           </div>
           <div className="module-body" style={{overflowX:"auto"}}>
@@ -865,33 +1081,28 @@
               <tbody>{w.tools.filter(t=>TOOL_SCORE[t]).map(t=>{
                 const d=TOOL_SCORE[t];
                 return <tr key={t}>
-                  <td style={{fontWeight:800}}>{t}</td>
+                  <td style={{fontWeight:600,color:"var(--bs-black)"}}>{t}</td>
                   {AXES.map(a=><td key={a[0]}><span className="score" style={scoreStyle(d[a[0]])}>{d[a[0]]}</span></td>)}
-                  <td style={{color:"#0F6E56",fontWeight:900}}>✓</td>
-                  <td style={{color:"#0F6E56",fontWeight:900}}>✓</td>
+                  <td style={{color:"var(--bs-ok)",fontWeight:700}}>✓</td>
+                  <td style={{color:"var(--bs-ok)",fontWeight:700}}>✓</td>
                 </tr>;
               })}</tbody>
             </table>
           </div>
         </section>
-
-        {/* REQ 2: Workflow Tools Features — module-card style */}
         <section className="module-card" id="Workflow Tools Features">
           <div className="module-head">
-            <div>
-              <div className="module-head-sub">Step-by-Step Guidance</div>
-              <div className="module-head-title">Workflow Tools Features</div>
-            </div>
+            <div><div className="module-head-sub">Step-by-Step Guidance</div><div className="module-head-title">Workflow Tools Features</div></div>
           </div>
           <div className="module-body">
             {w.steps.map((s,i)=><div className="feature-card" key={s[0]}>
-              <div className="feature-head" style={{background:colors[i%colors.length]+"08"}}>
-                <span className="step-badge" style={{background:colors[i%colors.length]+"20",color:colors[i%colors.length],margin:0}}>STEP {i+1}</span>
-                <strong style={{fontSize:12}}>{s[0]}</strong>
-                <span style={{fontSize:10,color:colors[i%colors.length],fontWeight:800}}>— {s[1]}</span>
+              <div className="feature-head">
+                <span className="step-badge" style={{background:"var(--bs-smoke)",color:stepColors[i%stepColors.length],margin:0}}>STEP {i+1}</span>
+                <strong style={{fontSize:12,color:"var(--bs-black)"}}>{s[0]}</strong>
+                <span style={{fontSize:10.5,color:"var(--bs-mid)",fontWeight:500}}>— {s[1]}</span>
               </div>
               <div className="feature-body">
-                <p style={{marginTop:0,marginBottom:10}}>{s[2]}. Use structured inputs, versioned prompts and human review to keep brand quality consistent.</p>
+                <p style={{marginTop:0,marginBottom:10,color:"var(--bs-charcoal)"}}>{s[2]}. Use structured inputs, versioned prompts and human review to keep brand quality consistent.</p>
                 <ol style={{marginBottom:0,paddingLeft:18,lineHeight:1.8}}>
                   <li>Define the intended output, target channel and brand constraints before generation.</li>
                   <li>Save prompt, seed/model and source-file references for reproducibility.</li>
@@ -901,39 +1112,29 @@
             </div>)}
           </div>
         </section>
-
-        {/* REQ 2: AI Tips — module-card style */}
         <section className="module-card" id="AI Tips">
           <div className="module-head">
-            <div>
-              <div className="module-head-sub">Best Practices</div>
-              <div className="module-head-title">AI Tips</div>
-            </div>
+            <div><div className="module-head-sub">Best Practices</div><div className="module-head-title">AI Tips</div></div>
           </div>
           <div className="module-body">
             <div className="tips-list">
-              <div className="tip-row"><div className="tip-label">Prompting</div><div>Anchor {w.label} prompts in brand, season, lighting, camera and exclusion rules.</div></div>
+              <div className="tip-row"><div className="tip-label">Prompt Lab</div><div>Anchor {w.label} prompts in brand, season, lighting, camera and exclusion rules.</div></div>
               <div className="tip-row"><div className="tip-label">Quality Risk</div><div>Review hands, fabric texture, logos, seams and scale before stakeholder sign-off.</div></div>
               <div className="tip-row"><div className="tip-label">IP Governance</div><div>Use approved or indemnified models for {market}; avoid living artists, celebrities and protected marks.</div></div>
             </div>
-            <div style={{fontSize:10,color:"#9CA3AF",marginTop:10}}>Context: {brand||"Selected brand"} · {market}</div>
+            <div style={{fontSize:10,color:"var(--bs-muted)",marginTop:12,letterSpacing:".04em"}}>Context: {brand||"Selected brand"} · {market}</div>
           </div>
         </section>
-
-        {/* REQ 2: AI Legal Guidelines — module-card style */}
         <section className="module-card" id="AI Legal Guidelines">
           <div className="module-head">
-            <div>
-              <div className="module-head-sub">Governance Framework</div>
-              <div className="module-head-title">AI Legal Guidelines</div>
-            </div>
+            <div><div className="module-head-sub">Governance Framework</div><div className="module-head-title">AI Legal Guidelines</div></div>
           </div>
           <div className="module-body">
             <div className="legal-grid">
               {[
-                {label:"Approved",title:"To Go",       color:"#166534",items:["Use approved tools and keep prompt/output records for auditability.","Apply human QA before commercial publication.",`Check local advertising and consumer-protection rules for ${market}.`]},
-                {label:"Prohibited",title:"No Go",      color:"#991B1B",items:["Do not upload confidential personal data into unapproved models.","Do not imitate living artists, celebrities or protected brand marks.","Do not publish outputs with unresolved copyright or model-release issues."]},
-                {label:"Best Practice",title:"Recommendations",color:"#1E40AF",items:["Prefer indemnified models for campaign and paid-media work.","Route edge cases through Legal & Compliance before launch.","Maintain a market-specific asset manifest for delivery."]},
+                {label:"Approved",     title:"To Go",           color:"var(--bs-ok)",    items:["Use approved tools and keep prompt/output records for auditability.","Apply human QA before commercial publication.",`Check local advertising and consumer-protection rules for ${market}.`]},
+                {label:"Prohibited",   title:"No Go",           color:"var(--bs-risk)",  items:["Do not upload confidential personal data into unapproved models.","Do not imitate living artists, celebrities or protected brand marks.","Do not publish outputs with unresolved copyright or model-release issues."]},
+                {label:"Best Practice",title:"Recommendations", color:"var(--bs-signal)",items:["Prefer indemnified models for campaign and paid-media work.","Route edge cases through Legal & Compliance before launch.","Maintain a market-specific asset manifest for delivery."]},
               ].map(card=><div className="legal-card" key={card.title}>
                 <div className="legal-head">
                   <div className="legal-head-label" style={{color:card.color}}>{card.label}</div>
@@ -953,59 +1154,214 @@
       </main>;
     }
 
-    // ════════════════════════════════════════════════════════
+
+    // PROMPTING WORKFLOW
+    function Prompting() {
+      const [selectedBrand,setSelectedBrand] = useState(null);
+      const [selectedUseCase,setSelectedUseCase] = useState(null);
+      const [generationType,setGenerationType] = useState(null);
+      const [selectedModel,setSelectedModel] = useState("");
+      const [prompts,setPrompts] = useState([]);
+
+      const modelOptions = generationType==="Image" ? ALL_BENCH_MODELS : generationType==="Video" ? ALL_VIDEO_MODELS : [];
+      const useCase = USE_CASES.find(u=>u.id===selectedUseCase);
+      const model = modelOptions.find(m=>m.id===selectedModel);
+      const canGenerate = !!(selectedBrand && useCase && generationType && model);
+
+      const modelGuidance = (m,type) => {
+        const n = (m?.name || "").toLowerCase();
+        const v = (m?.vendor || "").toLowerCase();
+        if(n.includes("firefly") || v.includes("adobe")) return "clear commercial brief, brand-safe wording, precise edit instructions, no celebrity or protected-style references";
+        if(n.includes("midjourney")) return "strong art direction, concise visual language, editorial mood, camera and lighting cues";
+        if(n.includes("sora") || n.includes("veo") || n.includes("runway") || n.includes("ray")) return "temporal consistency, camera movement, duration, motion pacing, scene continuity and clear negative constraints";
+        if(n.includes("kling") || n.includes("seedance") || n.includes("pixverse")) return "garment motion, model pose, fabric behaviour, smooth transitions and realistic movement";
+        if(n.includes("imagen") || n.includes("gemini")) return "structured prompt sections, high instruction adherence, product fidelity and detailed composition";
+        if(n.includes("flux") || n.includes("stable")) return "photorealistic detail, material texture, lighting, controlled composition and negative prompt discipline";
+        return `${type.toLowerCase()} generation best practices, product fidelity, brand consistency and production-ready output details`;
+      };
+
+      const brandGuidance = (brand) => {
+        const guides = {
+          "JACK & JONES":"masculine denim culture, confident casualwear, youthful energy, authentic street style, rugged details and commercial attitude",
+          "VERO MODA":"accessible fashion, feminine confidence, effortless trends, contemporary styling, soft editorial elegance and everyday wearability",
+          "ONLY":"young, expressive, social-first fashion, playful confidence, trend-driven styling, denim attitude and bold commercial energy",
+          "Selected":"premium Scandinavian minimalism, refined tailoring, responsible quality, calm sophistication, understated luxury and modern essentials",
+          "name it":"playful kidswear, comfort, softness, durability, joyful color accents, practical styling and family-friendly warmth",
+          "PIECES":"fashion accessories, feminine details, trend accents, styling versatility, playful layering and affordable wardrobe updates",
+          "VILA":"feminine elegance, romantic modernity, soft silhouettes, refined details, calm confidence and occasion-ready styling",
+          ".OBJECT":"minimal contemporary womenswear, clean lines, muted palettes, thoughtful simplicity, architectural shapes and elevated everyday pieces",
+          "NOISY MAY":"edgy denim, rebellious youth culture, streetwear influence, confident styling, expressive attitude and casual cool",
+          "Y.A.S":"occasionwear, modern femininity, elegant dresses, premium detailing, confident celebration mood and refined glamour",
+          "MAMALICIOUS":"maternity comfort, confidence, softness, practical elegance, inclusive styling and supportive everyday fashion",
+          "ONLY & SONS":"young menswear, denim-led casual style, relaxed confidence, modern essentials and urban commercial energy",
+          "ONLY PLAY":"activewear energy, performance comfort, sporty confidence, dynamic movement, fresh colors and wellness lifestyle",
+          "JDY":"fast fashion, youthful affordability, casual trends, easy styling, high-volume retail practicality and social relevance",
+          "JJXX":"youth denim, expressive identity, relaxed streetwear, confident individuality, fresh styling and modern casual fashion",
+          "KIDS ONLY":"mini-me fashion, playful confidence, color, movement, comfort, trend-led kids styling and joyful attitude",
+          "ONLY CARMAKOMA":"inclusive womenswear, confident curves, flattering fit, modern femininity, body positivity and trend relevance",
+          "JUNAROSE":"curve-focused femininity, flattering silhouettes, confidence, comfort, versatile styling and accessible elegance",
+          "Lil' Atelier":"poetic childrenswear, natural textures, soft colors, Nordic calm, handcrafted feeling and delicate storytelling",
+          "LMTD":"tween fashion, expressive youth culture, casual confidence, trend-led styling, comfort and social energy",
+          "BALMOHK":"premium contemporary expression, refined fashion attitude, clean styling, modern confidence and distinctive visual edge"
+        };
+        return guides[brand] || "BESTSELLER brand DNA, commercial fashion relevance, product clarity, Nordic quality and market-ready styling";
+      };
+
+      const buildPrompts = () => {
+        if(!canGenerate) return;
+        const guidance = modelGuidance(model,generationType);
+        const brandDNA = brandGuidance(selectedBrand);
+        const baseContext = `${useCase.label} for ${selectedBrand} within BESTSELLER fashion retail. Brand direction: deeply reflect ${selectedBrand}'s style guide, DNA, values and spirit — ${brandDNA}. Use case context: ${useCase.desc}. Output type: ${generationType}. AI model: ${model.name} (${model.vendor}). Adapt for ${guidance}.`;
+        const isVideo = generationType === "Video";
+        const nextPrompts = [
+          `${baseContext}\n\nCreate a premium ${isVideo?"short fashion video":"fashion retail image"} featuring a hero garment from the current collection. Show the product with accurate color, fabric texture, fit, seams, trims, and scale. Use a clean Scandinavian editorial direction: neutral background, soft natural light, refined styling, calm composition, and commercial-ready polish. Keep the brand identity understated and modern. ${isVideo?"Camera: slow controlled movement, 6-8 seconds, smooth motion, stable model identity, realistic garment drape." : "Camera: 70mm editorial product photography, balanced framing, high-resolution e-commerce quality."} Avoid distorted hands, incorrect logos, broken garment construction, unrealistic fabric, over-styling, or distracting props.`,
+          `${baseContext}\n\nGenerate a market-ready concept for a fashion campaign asset. The visual should feel Nordic, minimal, premium, and commercially usable for online retail. Focus on the selected use case by making the product the clear hero while adding enough context to inspire purchase. Include precise styling notes: coordinated outfit, realistic proportions, subtle seasonal palette, natural skin texture, believable fabric behaviour, and consistent lighting. ${isVideo?"Use a simple shot structure: opening product reveal, model movement, close fabric/detail moment, final hero frame. Maintain temporal coherence and no garment morphing." : "Use a refined editorial layout with negative space suitable for copy overlay and responsive cropping."} Negative constraints: no extra limbs, no unreadable text, no brand-inappropriate elements, no celebrity likeness, no exaggerated body shape.`,
+          `${baseContext}\n\nProduce a practical production prompt for high-volume fashion retail usage. Prioritize consistency, repeatability, and QA-friendly output. The asset must be suitable for e-commerce, paid social, CRM, and campaign adaptation. Describe the garment accurately, preserve silhouette and construction, use realistic model posture, and keep the setting simple, elegant, and non-distracting. ${isVideo?"Motion requirements: natural walking or subtle pose transition, realistic fabric physics, stable background, stable face and body, no flicker, no warped garment details." : "Image requirements: photorealistic finish, crisp product detail, accurate shadow, clean background integration, natural pose and garment drape."} Add room for localization and copy-safe spacing. Avoid visual noise, legal risk, protected marks, and unrealistic fashion details.`
+        ];
+        setPrompts(nextPrompts);
+      };
+
+      const updatePrompt = (idx,value) => setPrompts(ps=>ps.map((p,i)=>i===idx?value:p));
+      const copyPrompt = (text) => navigator.clipboard.writeText(text);
+
+      return <main>
+        <section style={{marginBottom:32}}>
+          <Divider label="Brand"/>
+          {[0,7,14].map(start=><div className="grid-brands" key={start}>
+            {BRANDS.slice(start,start+7).map(b=><button key={b} className={"brand-btn "+(selectedBrand===b?"active":"")} onClick={()=>{setSelectedBrand(selectedBrand===b?null:b);setPrompts([]);}}>{b}</button>)}
+          </div>)}
+        </section>
+        <section className="module-card">
+          <div className="module-head">
+            <div><div className="module-head-sub">Prompt Generation</div><div className="module-head-title">Fashion Retail Prompt Lab Workflow</div></div>
+          </div>
+          <div className="module-body">
+            <div className="context-section">
+              <div className="context-label">1. Use Case</div>
+              <div className="use-grid">
+                {USE_CASES.map(u=><button key={u.id} className={"use-card "+(selectedUseCase===u.id?"active":"")} onClick={()=>{setSelectedUseCase(u.id);setPrompts([]);}}>
+                  <div className="use-title">{u.label}</div>
+                  <div className="use-domain">{u.domain}</div>
+                  <div className="use-desc">{u.desc}</div>
+                </button>)}
+              </div>
+            </div>
+            <div className="context-section">
+              <div className="context-label">2. Generation Type</div>
+              <div className="chips">
+                {["Image","Video"].map(t=><button key={t} className={"chip "+(generationType===t?"active":"")} onClick={()=>{setGenerationType(t);setSelectedModel("");setPrompts([]);}}>{t}</button>)}
+              </div>
+            </div>
+            <div className="context-section">
+              <div className="context-label">3. AI Model</div>
+              <select value={selectedModel} disabled={!generationType} onChange={e=>{setSelectedModel(e.target.value);setPrompts([]);}} style={{width:"100%",border:"1px solid var(--bs-smoke)",borderRadius:"var(--r)",padding:"10px 14px",fontSize:13,color:"var(--bs-ink)",background:"var(--bs-white)",outline:"none"}}>
+                <option value="">{generationType ? `Select one ${generationType.toLowerCase()} model` : "Select generation type first"}</option>
+                {modelOptions.map(m=><option key={m.id} value={m.id}>{m.name} — {m.vendor}</option>)}
+              </select>
+            </div>
+            <button className="bench-run-btn" disabled={!canGenerate} onClick={buildPrompts}>Generate Prompts</button>
+          </div>
+        </section>
+        {prompts.length>0 && <section className="module-card">
+          <div className="module-head">
+            <div><div className="module-head-sub">Ready to Copy</div><div className="module-head-title">Generated Prompts</div></div>
+            <div style={{display:"flex",gap:5,flexWrap:"wrap"}}>
+              <Pill label={selectedBrand} bg="var(--bs-fog)" fg="var(--bs-black)"/>
+              <Pill label={useCase.label} bg="var(--bs-fog)" fg="var(--bs-black)"/>
+              <Pill label={generationType} bg="var(--bs-smoke)" fg="var(--bs-charcoal)"/>
+              <Pill label={model.name} bg="var(--bs-signal-l)" fg="var(--bs-signal)"/>
+            </div>
+          </div>
+          <div className="module-body">
+            {prompts.map((p,idx)=><div className="result-card" key={idx}>
+              <div className="result-head">
+                <strong>Prompt {idx+1}</strong>
+                <button className="bench-run-btn" onClick={()=>copyPrompt(p)}>Copy</button>
+              </div>
+              <div style={{padding:16}}>
+                <textarea className="context-textarea" value={p} onChange={e=>updatePrompt(idx,e.target.value)} rows={8}/>
+              </div>
+            </div>)}
+          </div>
+        </section>}
+      </main>;
+    }
+
     // AI TOOLS LIBRARY
-    // REQ 5: filters = Image/Video/Platform/Post-Prod; "AI" stripped from card renders
-    // REQ 6: Learn more link on every card
-    // ════════════════════════════════════════════════════════
     function Tools() {
-      const [filter,setFilter] = useState("All");
-      const list = TOOL_LIB.filter(t=>filter==="All"||t[2]===filter);
+      const list = rankedTools(TOOL_LIB);
       const tagStyle = (cat) => {
-        if(cat==="Image")     return {background:"#EFF6FF",color:"#1D4ED8",border:"1px solid #BFDBFE"};
-        if(cat==="Video")     return {background:"#FFF7ED",color:"#9A3412",border:"1px solid #FED7AA"};
-        if(cat==="Platform")  return {background:"#F5F3FF",color:"#5B21B6",border:"1px solid #DDD6FE"};
-        if(cat==="Post-Prod") return {background:"#ECFDF5",color:"#065F46",border:"1px solid #A7F3D0"};
-        return {background:"#F5F3FF",color:"#5B21B6",border:"1px solid #DDD6FE"};
+        if(cat==="Image")     return {background:"var(--bs-signal-l)",color:"var(--bs-signal)"};
+        if(cat==="Video")     return {background:"var(--bs-warn-l)",  color:"var(--bs-warn)"};
+        if(cat==="Platform")  return {background:"var(--bs-smoke)",   color:"var(--bs-charcoal)"};
+        if(cat==="Post-Prod") return {background:"var(--bs-ok-l)",    color:"var(--bs-ok)"};
+        return {background:"var(--bs-smoke)",color:"var(--bs-charcoal)"};
       };
       return <main>
-        <Divider label="Filter by Category"/>
-        <div className="chips" style={{marginBottom:24}}>
-          {LIB_FILTERS.map(f=><button className={"chip "+(filter===f?"active":"")} key={f} onClick={()=>setFilter(f)}>{f}</button>)}
-        </div>
-        <div style={{fontSize:11,color:"#6B7280",marginBottom:16}}>{list.length} tool{list.length!==1?"s":""} shown</div>
+        <div style={{fontSize:11,color:"var(--bs-muted)",marginBottom:16,letterSpacing:".04em"}}>{list.length} {list.length!==1?"tools":"tool"} shown · ordered by popularity, efficiency and creativity</div>
         <div className="tool-grid">
           {list.map((t,i)=><div className="tool-card" key={t[0]+"-"+i}>
             <div className="tool-head">
               <div style={{display:"flex",justifyContent:"space-between",gap:10,alignItems:"flex-start"}}>
-                <strong style={{fontSize:12}}>{t[0]}</strong>
+                <strong style={{fontSize:14.5,color:"var(--bs-black)",letterSpacing:"-.012em",lineHeight:1.25}}>{t[0]}</strong>
                 <span className="tag" style={tagStyle(t[2])}>{t[2]}</span>
               </div>
-              <div style={{fontSize:11,color:"#0052CC",fontWeight:800,marginTop:7}}>{t[1]}</div>
+              <div style={{fontSize:11,color:"var(--bs-mid)",fontWeight:500,marginTop:5,letterSpacing:".02em"}}>{t[1]}</div>
             </div>
-            <div style={{padding:16,fontSize:12,color:"#6B7280",lineHeight:1.7}}>
-              <strong style={{color:"#111827"}}>Capabilities:</strong><br/>{t[3]}<br/><br/>
-              <strong style={{color:"#111827"}}>Use cases:</strong><br/>{t[4]}
+            <div style={{padding:"14px 18px",fontSize:12,color:"var(--bs-mid)",lineHeight:1.7}}>
+              <div style={{fontWeight:600,color:"var(--bs-charcoal)",marginBottom:3}}>Capabilities</div>
+              <div style={{marginBottom:12}}>{t[3]}</div>
+              <div style={{fontWeight:600,color:"var(--bs-charcoal)",marginBottom:3}}>Use cases</div>
+              <div>{t[4]}</div>
             </div>
-            {t[5] && <div style={{padding:"0 16px 14px"}}>
-              <a href={t[5]} target="_blank" rel="noopener noreferrer" style={{fontSize:11,color:"#0052cc",fontWeight:700,textDecoration:"none"}}>Learn more ↗</a>
+            {t[5] && <div style={{padding:"0 18px 14px"}}>
+              <a href={t[5]} target="_blank" rel="noopener noreferrer" style={{fontSize:11,color:"var(--bs-signal-m)",fontWeight:500,textDecoration:"none",letterSpacing:".02em"}}>Learn more ↗</a>
             </div>}
           </div>)}
         </div>
       </main>;
     }
 
-    // ════════════════════════════════════════════════════════
-    // APP — REQ 1: sticky nav shell
+
+
+    // LOGIN ENTRY PAGE
+    function LoginPage({onLogin}) {
+      return <main className="login-page">
+        <section className="login-hero">
+          <div className="login-title-stack">
+            <div className="bs-page-title">GenAI<span> Media</span></div>
+            <div className="workbench-title">Workbench</div>
+          </div>
+          <div className="login-teaser">Optimize your AI-Powered Creativity</div>
+        </section>
+        <section className="login-card" aria-label="Login">
+          <div className="login-field">
+            <label className="login-label" htmlFor="user-id">User ID</label>
+            <input id="user-id" className="login-input" type="text" autoComplete="username" />
+          </div>
+          <div className="login-field">
+            <label className="login-label" htmlFor="password">Password</label>
+            <input id="password" className="login-input" type="password" autoComplete="current-password" />
+          </div>
+          <button className="login-button" type="button" onClick={onLogin}>Login</button>
+        </section>
+        <footer className="login-footer">BESTSELLER TECH Creative Solutions</footer>
+      </main>;
+    }
+
+        // APP
     // ════════════════════════════════════════════════════════
     function App() {
+      const [isLoggedIn,setIsLoggedIn] = useState(false);
       const [page,setPage] = useState("analyzer");
       const pages = [
         ["analyzer","Use Case \u2192 Workflow"],
         ["image","Image Models Benchmark"],
         ["video","Video Models Benchmark"],
-        ["tools","Tools Library"],
+        ["prompting","Prompt Lab"],
+        ["tools","AI Tools Library"],
       ];
+      if(!isLoggedIn) return <LoginPage onLogin={()=>setIsLoggedIn(true)}/>;
       return <div className="app">
         <div className="nav-shell">
           <Header/>
@@ -1016,8 +1372,9 @@
         <div className="page-content">
           {page==="analyzer" && <Analyzer/>}
           {page==="image"    && <Benchmark kind="image"/>}
-          {page==="video"    && <Benchmark kind="video"/>}
-          {page==="tools"    && <Tools/>}
+          {page==="video"     && <Benchmark kind="video"/>}
+          {page==="prompting" && <Prompting/>}
+          {page==="tools"     && <Tools/>}
         </div>
       </div>;
     }
