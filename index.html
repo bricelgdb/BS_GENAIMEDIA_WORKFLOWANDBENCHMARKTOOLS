@@ -3,1383 +3,535 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>GenAI Media Workbench</title>
+  <title>GenAI Media Workflow & Benchmark Tools</title>
   <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <style>
-    /* ═══════════════════════════════════════════════════════════════════════
-       BESTSELLER ENTERPRISE DESIGN SYSTEM
-       Primary reference: BESTSELLER.com + corporate editorial standards
-       Philosophy: Nordic restraint — monochrome precision, editorial space
-    ═══════════════════════════════════════════════════════════════════════ */
-
-    :root {
-      --bs-black:    #0A0A0A;
-      --bs-ink:      #1A1A1A;
-      --bs-charcoal: #2C2C2C;
-      --bs-mid:      #6B6B6B;
-      --bs-muted:    #9B9B9B;
-      --bs-ash:      #C8C8C8;
-      --bs-smoke:    #E4E4E4;
-      --bs-fog:      #F2F2F2;
-      --bs-page:     #F7F6F4;
-      --bs-white:    #FFFFFF;
-
-      --bs-signal:   #1A3A5C;
-      --bs-signal-l: #EEF3F8;
-      --bs-signal-m: #3D6E9E;
-
-      --bs-ok:       #1A4D30;
-      --bs-ok-l:     #EBF5EF;
-      --bs-warn:     #5C3600;
-      --bs-warn-l:   #FEF7EC;
-      --bs-risk:     #5C1A1A;
-      --bs-risk-l:   #FDEAEA;
-
-      --r:    3px;
-      --rm:   5px;
-      --rl:   8px;
-
-      --font: "Inter", system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
-    }
-
-    *, *::before, *::after { box-sizing: border-box; }
+    * { box-sizing: border-box; }
     body {
       margin: 0;
-      background: var(--bs-page);
-      font-family: var(--font);
-      font-size: 14px;
-      line-height: 1.5;
-      color: var(--bs-ink);
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
+      background: #f8fafc;
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      color: #111827;
     }
-    button, input, textarea { font-family: inherit; }
-
-    /* ── Sticky nav ──────────────────────────────────────── */
-    .nav-shell {
-      position: sticky;
-      top: 0;
-      z-index: 200;
-      background: var(--bs-white);
-      border-bottom: 1px solid var(--bs-smoke);
-    }
-    .page-content { padding-top: 40px; }
-
-    /* ── App wrapper ────────────────────────────────────── */
-    .app { max-width: 1120px; margin: 0 auto; padding: 0 32px 80px; }
-
-    /* ── Header ─────────────────────────────────────────── */
+    button, input { font-family: inherit; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .app { max-width: 1080px; margin: 0 auto; padding: 20px 18px 56px; }
     .header {
       position: relative;
-      padding: 20px 0 0;
-      background: var(--bs-white);
+      margin-bottom: 30px;
+      padding-top: 16px;
+      padding-bottom: 28px;
+      border-bottom: 1px solid #e5e7eb;
+      background: #f8fafc;
     }
-    .bs-wordmark {
-      position: absolute;
-      top: 20px;
-      right: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-      gap: 2px;
+    .brand-mark {
+      position: absolute; top: 16px; right: 0;
+      display: flex; flex-direction: column; align-items: center; gap: 5px;
     }
-    .bs-wordmark-main {
-      font-size: 12.5px;
-      font-weight: 700;
-      letter-spacing: .18em;
-      text-transform: uppercase;
-      color: var(--bs-black);
-      line-height: 1;
+    .brand-top { display: flex; align-items: baseline; line-height: 1; }
+    .brand-top strong { font-size: 14px; font-weight: 800; letter-spacing: .12em; }
+    .brand-top span { font-size: 14px; font-weight: 300; letter-spacing: .22em; }
+    .brand-sub { font-size: 9px; font-weight: 600; letter-spacing: .3em; }
+    .hero-copy { padding-right: 260px; }
+    .hero-title { display: flex; align-items: baseline; line-height: 1; margin-bottom: 12px; }
+    .hero-title .genai {
+      font-size: clamp(48px, 8vw, 80px);
+      font-weight: 800;
+      letter-spacing: -.02em;
+      background: linear-gradient(150deg, #1633cc 0%, #1a6ef5 60%, #3b8ff7 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
-    .bs-wordmark-sub {
-      font-size: 9.5px;
-      font-weight: 600;
-      letter-spacing: .24em;
-      text-transform: uppercase;
-      color: var(--bs-muted);
-      line-height: 1;
-    }
-    .hero-copy { padding-right: 230px; padding-bottom: 18px; }
-    .bs-page-title,
-    .workbench-title {
-      font-size: clamp(28px, 3.9vw, 42px);
-      font-weight: 700;
-      letter-spacing: -.025em;
-      color: var(--bs-black);
-      line-height: 1.04;
-      margin: 0;
-    }
-    .bs-page-title span { font-weight: 300; color: var(--bs-charcoal); }
-    .hero-title-stack {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 4px;
-    }
-    .workbench-title {
-      position: relative;
-      display: inline-block;
+    .hero-title .media {
+      margin-left: 20px;
+      font-size: clamp(48px, 8vw, 80px);
       font-weight: 300;
-      color: var(--bs-charcoal);
-      padding-bottom: 0;
+      color: #0b1840;
+      letter-spacing: -.015em;
     }
-    .hero-sub,
-    .hero-pills { display: none; }
-    .sep { width: 1px; height: 10px; background: var(--bs-ash); margin: 0 16px; }
-
-    /* ── Primary navigation ─────────────────────────────── */
-    .tabs { display: flex; overflow-x: auto; background: var(--bs-white); border-top: 1px solid var(--bs-smoke); scrollbar-width: none; }
-    .tabs::-webkit-scrollbar { display: none; }
-    .tab { font-size: 11.5px; font-weight: 500; padding: 13px 22px; background: transparent; border: none; border-bottom: 2px solid transparent; color: var(--bs-muted); cursor: pointer; white-space: nowrap; letter-spacing: .02em; transition: color .15s; }
-    .tab:hover { color: var(--bs-ink); }
-    .tab.active { color: var(--bs-black); border-bottom-color: var(--bs-black); font-weight: 600; }
-
-    /* ── Section label ──────────────────────────────────── */
-    .divider { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
-    .divider-badge { font-size: 9.5px; font-weight: 600; text-transform: uppercase; letter-spacing: .14em; padding: 4px 12px; border-radius: var(--r); background: var(--bs-ink); color: var(--bs-white); white-space: nowrap; flex-shrink: 0; }
-    .divider-line { flex: 1; height: 1px; background: var(--bs-smoke); }
-
-    /* ── Cards & modules ────────────────────────────────── */
-    .card { background: var(--bs-white); border: 1px solid var(--bs-smoke); border-radius: var(--rl); overflow: hidden; margin-bottom: 20px; }
-    .card-pad { padding: 24px 28px; }
-    .module-card { background: var(--bs-white); border: 1px solid var(--bs-smoke); border-radius: var(--rl); overflow: hidden; margin-bottom: 20px; }
-    .module-head { padding: 18px 28px 16px; border-bottom: 1px solid var(--bs-smoke); background: var(--bs-white); display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
-    .module-head-sub { font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: .16em; color: var(--bs-muted); margin-bottom: 3px; }
-    .module-head-title { font-size: 13.5px; font-weight: 600; color: var(--bs-black); letter-spacing: -.01em; }
-    .module-body { padding: 24px 28px; }
-
-    /* ── Brand grid ─────────────────────────────────────── */
-    .grid-brands { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; margin-bottom: 5px; }
-    .brand-btn { height: 52px; border-radius: var(--r); border: 1px solid var(--bs-smoke); background: var(--bs-white); display: flex; align-items: center; justify-content: center; cursor: pointer; font-weight: 600; font-size: 10px; color: var(--bs-charcoal); letter-spacing: .02em; transition: border-color .12s, background .12s, color .12s; }
-    .brand-btn:hover { border-color: var(--bs-charcoal); background: var(--bs-fog); }
-    .brand-btn.active { border: 1.5px solid var(--bs-black); background: var(--bs-black); color: var(--bs-white); }
-
-    /* ── Chips ──────────────────────────────────────────── */
+    .hero-sub {
+      font-size: 14px; font-weight: 300; letter-spacing: .42em;
+      color: #0b1840; text-transform: uppercase; margin-bottom: 20px;
+    }
+    .hero-pills { display: flex; align-items: center; flex-wrap: wrap; }
+    .hero-pills span { font-size: 10px; letter-spacing: .2em; color: #4e5f7a; white-space: nowrap; }
+    .sep { width: 1px; height: 12px; background: #a0aabf; margin: 0 20px; }
+    .tabs { display: flex; overflow-x: auto; border-bottom: 1px solid #e5e7eb; margin-bottom: 28px; background: white; border-radius: 12px 12px 0 0; }
+    .tab {
+      font-size: 12px; padding: 12px 20px; background: transparent; border: none;
+      border-bottom: 3px solid transparent; color: #6b7280; cursor: pointer; white-space: nowrap;
+    }
+    .tab.active { color: #0052cc; border-bottom-color: #0052cc; font-weight: 800; }
+    .divider { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
+    .divider-badge {
+      font-size: 10.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .09em;
+      padding: 5px 13px; border-radius: 999px; white-space: nowrap;
+    }
+    .divider-line { flex: 1; height: 1px; background: #e5e7eb; }
+    .card {
+      border: 1px solid #e5e7eb; border-radius: 14px; overflow: hidden;
+      background: white; margin-bottom: 16px;
+    }
+    .card-pad { padding: 20px 24px; }
+    .grid-brands { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin-bottom: 6px; }
+    .brand-btn {
+      height: 60px; border-radius: 8px; border: 1px solid #e5e7eb; background: white;
+      display: flex; align-items: center; justify-content: center; cursor: pointer;
+      font-weight: 800; font-size: 11px; color: #111827;
+    }
+    .brand-btn.active { border: 2px solid #534ab7; background: #eeedfe; color: #3c3489; box-shadow: 0 0 0 3px #534ab722; }
     .chips { display: flex; flex-wrap: wrap; gap: 6px; }
-    .chip { font-size: 11px; font-weight: 500; padding: 5px 14px; border-radius: var(--r); cursor: pointer; border: 1px solid var(--bs-smoke); background: var(--bs-white); color: var(--bs-mid); letter-spacing: .01em; transition: border-color .12s, color .12s, background .12s; }
-    .chip:hover { border-color: var(--bs-charcoal); color: var(--bs-ink); }
-    .chip.market-active { font-weight: 700; color: var(--bs-black); border-color: var(--bs-charcoal); background: var(--bs-white); }
-    .chip.active { background: var(--bs-black); border-color: var(--bs-black); color: var(--bs-white); font-weight: 600; }
-
-    /* ── Use case grid ──────────────────────────────────── */
-    .use-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(148px, 1fr)); gap: 5px; }
-    .use-card { text-align: left; padding: 13px 14px 11px; border-radius: var(--r); cursor: pointer; border: 1px solid var(--bs-smoke); background: var(--bs-white); transition: border-color .12s, background .12s; }
-    .use-card:hover { border-color: var(--bs-charcoal); }
-    .use-card.active { border: 1.5px solid var(--bs-black); background: var(--bs-fog); }
-    .use-title  { font-size: 11.5px; font-weight: 600; margin-bottom: 3px; line-height: 1.3; color: var(--bs-black); }
-    .use-domain { font-size: 9.5px; color: var(--bs-muted); margin-bottom: 3px; letter-spacing: .03em; }
-    .use-desc   { font-size: 9.5px; color: var(--bs-muted); line-height: 1.4; }
-
-    /* ── Section anchor nav ─────────────────────────────── */
-    .sec-nav { display: flex; gap: 2px; flex-wrap: wrap; margin-bottom: 28px; background: var(--bs-fog); border: 1px solid var(--bs-smoke); border-radius: var(--rm); padding: 5px; }
-    .sec-nav button { padding: 6px 14px; border-radius: var(--r); border: 0; background: transparent; color: var(--bs-mid); cursor: pointer; font-size: 11px; font-weight: 500; letter-spacing: .02em; transition: background .1s, color .1s; }
-    .sec-nav button:hover { background: var(--bs-white); color: var(--bs-black); }
-
-    /* ── Workflow head ──────────────────────────────────── */
-    .workflow-head { padding: 22px 28px 18px; border-bottom: 1px solid var(--bs-smoke); background: var(--bs-white); }
-    .eyebrow { font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: .18em; color: var(--bs-muted); margin-bottom: 6px; }
-    .workflow-title { font-size: 22px; font-weight: 700; color: var(--bs-black); letter-spacing: -.025em; line-height: 1.15; margin-bottom: 12px; }
-    .pill { display: inline-flex; align-items: center; border-radius: var(--r); padding: 3px 9px; font-size: 10px; font-weight: 500; margin-right: 5px; margin-bottom: 3px; letter-spacing: .02em; }
-
-    /* ── Workflow strip ─────────────────────────────────── */
-    .workflow-strip { background: var(--bs-fog); border: 1px solid var(--bs-smoke); border-radius: var(--rm); padding: 18px; overflow-x: auto; }
+    .chip {
+      font-size: 11px; padding: 5px 13px; border-radius: 999px; cursor: pointer;
+      border: 1px solid #e5e7eb; background: transparent; color: #6b7280;
+    }
+    .chip.active { background: #eeedfe; border-color: #534ab7; color: #3c3489; font-weight: 700; }
+    .use-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(145px, 1fr)); gap: 8px; }
+    .use-card {
+      text-align: left; padding: 12px; border-radius: 10px; cursor: pointer;
+      border: 1px solid #e5e7eb; background: white;
+    }
+    .use-card.active { border: 2px solid #534ab7; background: #eeedfe; }
+    .use-icon { font-size: 17px; margin-bottom: 7px; color: #6b7280; }
+    .use-title { font-size: 11px; font-weight: 800; margin-bottom: 3px; line-height: 1.3; }
+    .use-domain { font-size: 9.5px; color: #6b7280; margin-bottom: 4px; }
+    .use-desc { font-size: 9.5px; color: #6b7280; line-height: 1.4; opacity: .85; }
+    .nav { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 24px; background: #f0f4ff; border: 1px solid #0052cc30; border-radius: 10px; padding: 8px 12px; }
+    .nav button { padding: 6px 14px; border-radius: 999px; border: 0; background: white; color: #0052cc; cursor: pointer; font-size: 11px; font-weight: 700; }
+    .workflow-head { padding: 20px 24px 16px; border-bottom: 1px solid #e5e7eb; background: linear-gradient(135deg, #f0f4ff, #fafbff); }
+    .eyebrow { font-size: 9.5px; color: #0052cc; font-weight: 800; text-transform: uppercase; letter-spacing: .1em; margin-bottom: 5px; }
+    .workflow-title { font-size: 28px; font-weight: 900; color: #111827; letter-spacing: -.03em; line-height: 1.1; margin-bottom: 12px; }
+    .pill { display: inline-flex; align-items: center; border-radius: 999px; padding: 4px 10px; font-size: 10px; font-weight: 700; margin-right: 6px; margin-bottom: 4px; }
+    .workflow-strip { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; overflow-x: auto; }
     .steps { display: flex; align-items: stretch; min-width: 900px; }
-    .step { width: 190px; background: var(--bs-white); border-radius: var(--r); border: 1px solid var(--bs-smoke); overflow: hidden; flex: 0 0 auto; }
-    .step-bar   { height: 3px; }
-    .step-body  { padding: 13px 14px 15px; }
-    .step-badge { display: inline-block; font-size: 8.5px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; padding: 2px 7px; border-radius: var(--r); margin-bottom: 8px; }
-    .step-name  { font-size: 12px; font-weight: 700; margin-bottom: 4px; color: var(--bs-black); }
-    .step-tool  { font-size: 10px; font-weight: 600; margin-bottom: 5px; }
-    .step-desc  { font-size: 10px; color: var(--bs-mid); line-height: 1.5; }
-    .arrow { width: 32px; display: flex; align-items: center; justify-content: center; color: var(--bs-ash); font-size: 14px; }
-
-    /* ── Table ──────────────────────────────────────────── */
-    table { width: 100%; border-collapse: collapse; font-size: 12px; min-width: 520px; }
-    th { text-align: center; padding: 9px 10px; color: var(--bs-muted); font-size: 9.5px; font-weight: 600; text-transform: uppercase; letter-spacing: .09em; background: var(--bs-fog); border-bottom: 1px solid var(--bs-smoke); }
+    .step {
+      width: 190px; background: white; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,.07);
+      overflow: hidden; flex: 0 0 auto;
+    }
+    .step-bar { height: 4px; }
+    .step-body { padding: 13px 14px 15px; }
+    .step-badge { display: inline-flex; font-size: 9px; font-weight: 900; padding: 3px 8px; border-radius: 999px; margin-bottom: 8px; }
+    .step-name { font-size: 13px; font-weight: 900; margin-bottom: 5px; }
+    .step-tool { font-size: 10px; font-weight: 800; margin-bottom: 7px; }
+    .step-desc { font-size: 10px; color: #6b7280; line-height: 1.5; }
+    .arrow { width: 44px; display: flex; align-items: center; justify-content: center; color: #10b981; font-weight: 900; }
+    table { width: 100%; border-collapse: collapse; font-size: 11px; min-width: 560px; }
+    th { text-align: center; padding: 10px; color: #6b7280; font-size: 10px; font-weight: 600; background: #f8fafc; border-bottom: 1px solid #e5e7eb; }
     th:first-child, td:first-child { text-align: left; }
-    td { text-align: center; padding: 10px; border-bottom: 1px solid var(--bs-fog); color: var(--bs-ink); }
-    tr:last-child td { border-bottom: none; }
-    .score { border-radius: var(--r); padding: 2px 8px; font-size: 11px; font-weight: 600; }
-
-    /* ── Feature cards ──────────────────────────────────── */
-    .feature-card { border: 1px solid var(--bs-smoke); border-radius: var(--r); overflow: hidden; margin-bottom: 7px; background: var(--bs-white); }
-    .feature-head { padding: 10px 16px; border-bottom: 1px solid var(--bs-smoke); display: flex; gap: 10px; align-items: center; background: var(--bs-fog); }
-    .feature-body { padding: 14px 18px; font-size: 12px; color: var(--bs-mid); line-height: 1.7; }
-
-    /* ── Tips ───────────────────────────────────────────── */
-    .tips-list { display: flex; flex-direction: column; border: 1px solid var(--bs-smoke); border-radius: var(--r); overflow: hidden; }
-    .tip-row { display: flex; align-items: stretch; font-size: 12.5px; line-height: 1.65; border-bottom: 1px solid var(--bs-smoke); }
-    .tip-row:last-child { border-bottom: none; }
-    .tip-label { font-size: 9.5px; font-weight: 600; text-transform: uppercase; letter-spacing: .1em; color: var(--bs-ink); background: var(--bs-fog); min-width: 120px; padding: 14px 16px; flex-shrink: 0; display: flex; align-items: center; border-right: 1px solid var(--bs-smoke); }
-    .tip-row > div:last-child { padding: 14px 18px; color: var(--bs-charcoal); flex: 1; }
-
-    /* ── Legal ──────────────────────────────────────────── */
-    .legal-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-    .legal-card { border-radius: var(--r); overflow: hidden; border: 1px solid var(--bs-smoke); background: var(--bs-white); }
-    .legal-head { padding: 12px 16px 10px; border-bottom: 1px solid var(--bs-smoke); background: var(--bs-fog); }
-    .legal-head-label { font-size: 8.5px; font-weight: 600; text-transform: uppercase; letter-spacing: .14em; margin-bottom: 2px; }
-    .legal-head-title { font-size: 13px; font-weight: 700; color: var(--bs-black); }
-    .legal-body { padding: 14px 16px; font-size: 12px; color: var(--bs-charcoal); line-height: 1.6; }
-    .legal-item { display: flex; gap: 10px; margin-bottom: 8px; align-items: flex-start; }
-    .legal-dot  { width: 5px; height: 5px; border-radius: 50%; flex: 0 0 auto; margin-top: 7px; }
-    .notice { margin-top: 14px; padding: 12px 16px; background: var(--bs-fog); border: 1px solid var(--bs-smoke); border-left: 3px solid var(--bs-charcoal); border-radius: var(--r); }
-    .notice-title { font-size: 9px; font-weight: 700; color: var(--bs-charcoal); text-transform: uppercase; letter-spacing: .14em; margin-bottom: 5px; }
-    .notice p { margin: 0; font-size: 11px; color: var(--bs-mid); line-height: 1.7; }
-
-    /* ── Bench inner tabs ───────────────────────────────── */
-    .bench-inner-tabs { display: flex; border-bottom: 1px solid var(--bs-smoke); background: var(--bs-fog); overflow-x: auto; scrollbar-width: none; }
-    .bench-inner-tabs::-webkit-scrollbar { display: none; }
-    .bench-inner-tab { font-size: 11px; font-weight: 500; padding: 10px 18px; background: transparent; border: none; border-bottom: 2px solid transparent; color: var(--bs-muted); cursor: pointer; white-space: nowrap; letter-spacing: .02em; transition: color .12s; }
-    .bench-inner-tab:hover { color: var(--bs-ink); }
-    .bench-inner-tab.active { color: var(--bs-black); border-bottom-color: var(--bs-black); font-weight: 600; background: var(--bs-white); }
-    .bench-tab-content { padding: 20px; }
-
-    /* ── Model cards ────────────────────────────────────── */
-    .model-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
-    .model-card { background: var(--bs-white); border: 1px solid var(--bs-smoke); border-radius: var(--r); padding: 12px 14px; cursor: pointer; transition: border-color .12s; }
-    .model-card:hover { border-color: var(--bs-charcoal); }
-    .model-card.active { background: var(--bs-fog); border-color: var(--bs-black); border-width: 1.5px; }
-    .model-link { display: inline-flex; align-items: center; gap: 3px; font-size: 9.5px; color: var(--bs-signal-m); font-weight: 500; text-decoration: none; margin-top: 6px; letter-spacing: .01em; }
-    .model-link:hover { text-decoration: underline; }
-
-    /* ── Selection controls ─────────────────────────────── */
-    .check { width: 15px; height: 15px; border-radius: 2px; border: 1.5px solid var(--bs-ash); display: inline-flex; align-items: center; justify-content: center; font-size: 10px; flex-shrink: 0; transition: background .1s, border-color .1s; }
-    .check.active { background: var(--bs-black); color: var(--bs-white); border-color: var(--bs-black); }
-    .radio-circle { width: 15px; height: 15px; border-radius: 50%; border: 1.5px solid var(--bs-ash); display: inline-flex; align-items: center; justify-content: center; font-size: 8px; flex-shrink: 0; }
-    .radio-circle.active { background: var(--bs-black); color: var(--bs-white); border-color: var(--bs-black); }
-
-    /* ── Criteria ───────────────────────────────────────── */
-    .criteria-group { border: 1px solid var(--bs-smoke); border-radius: var(--r); overflow: hidden; margin-bottom: 7px; background: var(--bs-white); }
-    .criteria-group-head { padding: 10px 16px; background: var(--bs-fog); border-bottom: 1px solid var(--bs-smoke); display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: background .1s; }
-    .criteria-group-head:hover { background: var(--bs-smoke); }
-    .criteria-group-title { font-size: 12px; font-weight: 600; color: var(--bs-black); }
-    .criteria-weight { font-size: 10px; font-weight: 600; color: var(--bs-ink); background: var(--bs-smoke); border-radius: var(--r); padding: 2px 7px; }
-    .criteria-items { padding: 10px 16px; display: flex; flex-direction: column; gap: 4px; }
-    .criteria-item { display: flex; align-items: center; gap: 10px; padding: 7px 10px; border-radius: var(--r); cursor: pointer; border: 1px solid var(--bs-smoke); background: var(--bs-white); font-size: 12px; color: var(--bs-charcoal); transition: border-color .1s; }
-    .criteria-item:hover { border-color: var(--bs-charcoal); }
-    .criteria-item.active { background: var(--bs-fog); border-color: var(--bs-black); color: var(--bs-black); font-weight: 500; }
-
-    /* ── Use case list ──────────────────────────────────── */
-    .bench-usecase-grid { display: grid; grid-template-columns: 1fr; gap: 4px; }
-    .bench-usecase-item { display: flex; align-items: flex-start; gap: 12px; padding: 12px 14px; border-radius: var(--r); cursor: pointer; border: 1px solid var(--bs-smoke); background: var(--bs-white); transition: border-color .1s; }
-    .bench-usecase-item:hover { border-color: var(--bs-charcoal); }
-    .bench-usecase-item.active { background: var(--bs-fog); border-color: var(--bs-black); }
-    .bench-usecase-text strong { font-size: 12px; font-weight: 600; display: block; margin-bottom: 2px; color: var(--bs-black); }
-    .bench-usecase-text span   { font-size: 11px; color: var(--bs-mid); line-height: 1.4; }
-
-    /* ── Context ────────────────────────────────────────── */
-    .context-section { margin-bottom: 22px; }
-    .context-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .1em; color: var(--bs-ink); margin-bottom: 10px; }
-    .volume-chips { display: flex; flex-wrap: wrap; gap: 6px; }
-    .context-textarea { width: 100%; border: 1px solid var(--bs-smoke); border-radius: var(--r); padding: 10px 14px; font-size: 13px; color: var(--bs-ink); resize: vertical; min-height: 90px; outline: none; line-height: 1.6; background: var(--bs-white); transition: border-color .12s; }
-    .context-textarea:focus { border-color: var(--bs-charcoal); box-shadow: 0 0 0 3px rgba(0,0,0,.05); }
-
-    /* ── Prompt ─────────────────────────────────────────── */
-    .prompt-box { background: #0F0F0F; border-radius: var(--r); padding: 20px 24px; font-size: 11.5px; color: #C0C0C0; line-height: 1.8; font-family: 'Menlo','Consolas','Courier New',monospace; white-space: pre-wrap; word-break: break-word; min-height: 300px; }
-    .copy-btn { background: var(--bs-black); color: var(--bs-white); border: none; border-radius: var(--r); padding: 10px 22px; font-size: 12px; font-weight: 600; cursor: pointer; margin-bottom: 16px; letter-spacing: .04em; transition: background .12s; }
-    .copy-btn:hover { background: var(--bs-charcoal); }
-    .copy-btn.copied { background: var(--bs-ok); }
-
-    /* ── Results ────────────────────────────────────────── */
-    .result-card { border: 1px solid var(--bs-smoke); border-radius: var(--r); background: var(--bs-white); overflow: hidden; margin-bottom: 10px; }
-    .result-head { padding: 14px 18px 12px; border-bottom: 1px solid var(--bs-smoke); background: var(--bs-fog); display: flex; justify-content: space-between; align-items: center; }
-    .bar { height: 3px; background: var(--bs-smoke); border-radius: 2px; overflow: hidden; }
-    .bar div { height: 100%; border-radius: 2px; }
-
-    /* ── Tools library ──────────────────────────────────── */
-    .tool-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 8px; }
-    .tool-card { background: var(--bs-white); border: 1px solid var(--bs-smoke); border-radius: var(--r); overflow: hidden; transition: border-color .12s; }
-    .tool-card:hover { border-color: var(--bs-charcoal); }
-    .tool-head { padding: 14px 18px 12px; border-bottom: 1px solid var(--bs-smoke); background: var(--bs-fog); }
-    .tag { border-radius: var(--r); padding: 2px 7px; font-size: 9px; font-weight: 600; letter-spacing: .04em; }
-
-    /* ── Bench run button ───────────────────────────────── */
-    .bench-run-btn { background: var(--bs-black); color: var(--bs-white); border: none; border-radius: var(--r); padding: 8px 18px; font-size: 11.5px; font-weight: 600; letter-spacing: .04em; cursor: pointer; transition: background .12s; }
-    .bench-run-btn:hover:not(:disabled) { background: var(--bs-charcoal); }
-    .bench-run-btn:disabled { background: var(--bs-smoke); color: var(--bs-muted); cursor: not-allowed; }
-
-
-
-    /* ── Login entry page ───────────────────────────────── */
-    .login-page {
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 48px 32px 36px;
-      background: var(--bs-page);
-      position: relative;
-    }
-    .login-hero {
-      width: 100%;
-      max-width: 720px;
-      text-align: center;
-      margin-bottom: 34px;
-    }
-    .login-title-stack {
-      display: inline-flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-      margin-bottom: 16px;
-    }
-    .login-title-stack .bs-page-title,
-    .login-title-stack .workbench-title {
-      text-align: center;
-    }
-    .login-teaser {
-      font-size: 10.5px;
-      font-weight: 600;
-      letter-spacing: .2em;
-      text-transform: uppercase;
-      color: var(--bs-muted);
-    }
-    .login-card {
-      width: 100%;
-      max-width: 420px;
-      background: var(--bs-white);
-      border: 1px solid var(--bs-smoke);
-      border-radius: var(--rl);
-      padding: 28px;
-      box-shadow: 0 18px 60px rgba(10,10,10,.04);
-    }
-    .login-field {
-      margin-bottom: 14px;
-    }
-    .login-label {
-      display: block;
-      font-size: 9.5px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: .14em;
-      color: var(--bs-ink);
-      margin-bottom: 8px;
-    }
-    .login-input {
-      width: 100%;
-      height: 44px;
-      border: 1px solid var(--bs-smoke);
-      border-radius: var(--r);
-      background: var(--bs-white);
-      color: var(--bs-ink);
-      font-size: 13px;
-      padding: 0 14px;
-      outline: none;
-      transition: border-color .12s, box-shadow .12s;
-    }
-    .login-input:focus {
-      border-color: var(--bs-charcoal);
-      box-shadow: 0 0 0 3px rgba(0,0,0,.05);
-    }
-    .login-button {
-      width: 100%;
-      height: 44px;
-      margin-top: 8px;
-      border: 0;
-      border-radius: var(--r);
-      background: var(--bs-black);
-      color: var(--bs-white);
-      font-size: 12px;
-      font-weight: 700;
-      letter-spacing: .08em;
-      text-transform: uppercase;
-      cursor: pointer;
-      transition: background .12s;
-    }
-    .login-button:hover { background: var(--bs-charcoal); }
-    .login-footer {
-      position: absolute;
-      left: 32px;
-      right: 32px;
-      bottom: 28px;
-      text-align: center;
-      font-size: 9.5px;
-      font-weight: 600;
-      letter-spacing: .2em;
-      text-transform: uppercase;
-      color: var(--bs-muted);
-    }
-
-    /* ── Responsive ─────────────────────────────────────── */
+    td { text-align: center; padding: 11px 10px; border-bottom: 1px solid #e5e7eb; }
+    .score { border-radius: 999px; padding: 2px 9px; font-size: 10px; font-weight: 800; }
+    .feature-card { border: 1px solid #e5e7eb; border-radius: 10px; overflow: hidden; margin-bottom: 10px; background: white; }
+    .feature-head { padding: 10px 14px; border-bottom: 1px solid #e5e7eb; display: flex; gap: 10px; align-items: center; }
+    .feature-body { padding: 12px 14px; font-size: 11.5px; color: #6b7280; line-height: 1.65; }
+    .tips { background: #fafafa; border: 1px solid #e5e7eb; border-radius: 10px; padding: 16px; font-size: 12px; line-height: 2; }
+    .legal-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .legal-card { border-radius: 12px; overflow: hidden; border: 1.5px solid; }
+    .legal-head { padding: 12px 16px 10px; color: white; }
+    .legal-head strong { display: block; font-size: 12px; letter-spacing: .04em; }
+    .legal-head span { display: block; font-size: 9px; opacity: .75; margin-top: 2px; text-transform: uppercase; letter-spacing: .06em; }
+    .legal-body { padding: 12px 14px; font-size: 11.5px; color: #1f2937; line-height: 1.6; }
+    .legal-item { display: flex; gap: 8px; margin-bottom: 8px; }
+    .dot { width: 6px; height: 6px; border-radius: 50%; flex: 0 0 auto; margin-top: 7px; }
+    .notice { margin-top: 16px; padding: 16px 20px; background: #f8fafc; border: 1px solid #d1d5db; border-left: 4px solid #003884; border-radius: 8px; }
+    .notice-title { font-size: 10px; font-weight: 900; color: #003884; text-transform: uppercase; letter-spacing: .1em; margin-bottom: 8px; }
+    .notice p { margin: 0; font-size: 11px; color: #374151; line-height: 1.85; }
+    .bench-layout { display: grid; grid-template-columns: 390px 1fr; height: 720px; background: #f3f4f6; border-radius: 12px; overflow: hidden; border: 1px solid #e5e7eb; }
+    .bench-top { grid-column: span 2; background: white; border-bottom: 1px solid #e5e7eb; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; height: 48px; }
+    .bench-side { background: white; border-right: 1px solid #e5e7eb; overflow-y: auto; padding: 16px; }
+    .model-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+    .model-card { background: #fafafa; border: 1.5px solid #e5e7eb; border-radius: 8px; padding: 10px 12px; cursor: pointer; }
+    .model-card.active { background: #f0f7ff; border-color: #93c5fd; }
+    .check { width: 16px; height: 16px; border-radius: 4px; border: 1.5px solid #d1d5db; display: inline-flex; align-items: center; justify-content: center; font-size: 11px; }
+    .check.active { background: #0052cc; color: white; border-color: #0052cc; }
+    .bench-main { display: flex; flex-direction: column; overflow: hidden; background: #f9fafb; }
+    .bench-results { flex: 1; overflow: auto; padding: 24px; }
+    .result-card { border: 1px solid #e5e7eb; border-radius: 12px; background: white; overflow: hidden; margin-bottom: 12px; }
+    .result-head { padding: 12px 16px 10px; border-bottom: 1px solid #e5e7eb; background: #fafafa; display: flex; justify-content: space-between; align-items: center; }
+    .bar { height: 4px; background: #e5e7eb; border-radius: 4px; overflow: hidden; }
+    .bar div { height: 100%; border-radius: 4px; }
+    .tool-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 12px; }
+    .tool-card { background: white; border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden; }
+    .tool-head { padding: 14px 16px 12px; border-bottom: 1px solid #e5e7eb; }
+    .tag { border-radius: 4px; padding: 2px 7px; font-size: 9px; font-weight: 900; }
     @media (max-width: 800px) {
-      .app { padding: 0 16px 60px; }
-      .bs-wordmark { position: static; align-items: flex-start; margin-bottom: 12px; }
-      .hero-copy   { padding-right: 0; }
+      .brand-mark { position: static; align-items: flex-start; margin-bottom: 20px; }
+      .hero-copy { padding-right: 0; }
       .hero-pills .sep { display: none; }
-      .hero-pills  { gap: 10px; }
+      .hero-pills { gap: 12px; }
       .grid-brands { grid-template-columns: repeat(3, 1fr); }
-      .legal-grid  { grid-template-columns: 1fr; }
-      .model-grid  { grid-template-columns: 1fr; }
-      .tab { padding: 12px 14px; font-size: 11px; }
-    }
-    @media (max-width: 500px) {
-      .grid-brands { grid-template-columns: repeat(2, 1fr); }
-      .use-grid    { grid-template-columns: repeat(2, 1fr); }
+      .legal-grid, .bench-layout { grid-template-columns: 1fr; height: auto; }
+      .bench-top { grid-column: span 1; }
+      .bench-side { border-right: 0; }
+      .bench-results { min-height: 420px; }
     }
   </style>
 </head>
 <body>
   <div id="root"></div>
+
   <script type="text/babel">
     const { useState } = React;
 
     const C = {
-      blue:"var(--bs-black)", indigo:"var(--bs-charcoal)", indigoL:"var(--bs-fog)", indigoDark:"var(--bs-ink)",
-      green:"var(--bs-ok)", greenL:"var(--bs-ok-l)", amber:"var(--bs-warn)"
+      blue:"#0052CC", indigo:"#534AB7", indigoL:"#EEEDFE", indigoDark:"#3C3489",
+      green:"#0F6E56", greenL:"#E1F5EE", amber:"#B45309", amberL:"#FEF3C7",
+      red:"#DC2626", border:"#E5E7EB", textSec:"#6B7280"
     };
 
-    const BRANDS  = ["JACK & JONES","VERO MODA","ONLY","Selected","name it","PIECES","VILA",".OBJECT","NOISY MAY","Y.A.S","MAMALICIOUS","ONLY & SONS","ONLY PLAY","JDY","JJXX","KIDS ONLY","ONLY CARMAKOMA","JUNAROSE","Lil' Atelier","LMTD","BALMOHK"];
+    const BRANDS = ["JACK & JONES","VERO MODA","ONLY","Selected","name it","PIECES","VILA",".OBJECT","NOISY MAY","Y.A.S","MAMALICIOUS","ONLY & SONS","ONLY PLAY","JDY","JJXX","KIDS ONLY","ONLY CARMAKOMA","JUNAROSE","Lil' Atelier","LMTD","BALMOHK"];
     const MARKETS = ["Global","Denmark","Germany","Spain","France","Norway","Netherlands","UK","Poland","United States","Canada","India","China","Italy","Turkiye"];
 
     const USE_CASES = [
-      {id:"packshot", label:"E-com Pack Shot",      domain:"Photo – E-commerce",  desc:"Product-on-white at volume"},
-      {id:"campaign", label:"Campaign Hero Image",   domain:"Photo – Campaign",    desc:"Art-directed hero visual"},
-      {id:"social",   label:"Social & Story Assets", domain:"Design – Social",     desc:"On-brand content per channel"},
-      {id:"video",    label:"AI Video from Stills",  domain:"Video – Campaign",    desc:"Animate stills into clips"},
-      {id:"loc",      label:"Market Localisation",   domain:"Localisation",        desc:"Adapt per market & format"},
-      {id:"lookbook", label:"Look-book Production",  domain:"Photo – Design",      desc:"Seasonal editorial end-to-end"},
-      {id:"3drender", label:"3D Garment Render",     domain:"3D – E-commerce",     desc:"CLO3D to final imagery"},
-      {id:"upscale",  label:"Asset Upscaling",       domain:"Photo – Post-prod.",  desc:"AI resolution at volume"},
-      {id:"brief",    label:"Brief to Visual",       domain:"Design – AI",         desc:"Text brief to mood board"},
-      {id:"seasonal", label:"Seasonal Banner Suite", domain:"Design – E-commerce", desc:"Full seasonal promo banners"},
-      {id:"tryon",    label:"Virtual Try-on",        domain:"AI – E-commerce",     desc:"Swap models / dress avatars"},
-      {id:"bgscene",  label:"Background Generation", domain:"Photo – Post-prod.",  desc:"Replace / generate backdrops"},
-      {id:"recolor",  label:"Product Recoloring",    domain:"AI – E-commerce",     desc:"All colorways from one hero"},
-      {id:"crm",      label:"Personalised CRM",      domain:"Design – Marketing",  desc:"Dynamic per-audience creatives"},
-      {id:"shortads", label:"Short-form Motion Ads", domain:"Video – Social",      desc:"TikTok/Reels-ready motion ads"},
-    ];
+      ["packshot","▦","E-com pack shot","Photo – E-commerce","Product-on-white at volume"],
+      ["campaign","◉","Campaign hero image","Photo – Campaign","Art-directed hero visual"],
+      ["social","▯","Social & story assets","Design – Social","On-brand content per channel"],
+      ["video","▶","AI video from stills","Video – Campaign","Animate stills into clips"],
+      ["loc","◎","Market localisation","Localisation","Adapt per market & format"],
+      ["lookbook","▤","Look-book production","Photo – Design","Seasonal editorial end-to-end"],
+      ["3drender","◧","3D garment render","3D – E-commerce","CLO3D to final imagery"],
+      ["upscale","↗","Asset upscaling","Photo – Post-prod.","AI resolution at volume"],
+      ["brief","✦","Brief to visual","Design – AI","Text brief → mood board"],
+      ["seasonal","◷","Seasonal banner suite","Design – E-commerce","Full seasonal promo banners"],
+      ["tryon","✓","Virtual try-on","AI – E-commerce","Swap models / dress avatars"],
+      ["bgscene","▧","Background generation","Photo – Post-prod.","Replace / generate backdrops"],
+      ["recolor","◌","Product recoloring","AI – E-commerce","All colorways from one hero"],
+      ["crm","⌾","Personalised CRM","Design – Marketing","Dynamic per-audience creatives"],
+      ["shortads","▯","Short-form motion ads","Video – Social","TikTok/Reels-ready motion ads"],
+    ].map(([id,icon,label,domain,desc]) => ({id,icon,label,domain,desc}));
 
     const WF = {
-      packshot:  {label:"E-com Pack Shot",          tools:["Adobe Firefly","Topaz Gigapixel","Adobe Express"], steps:[["Asset prep","Adobe Express","Remove backgrounds, normalise white balance"],["AI generation","Adobe Firefly","Product-on-white or styled set creation"],["Upscaling","Topaz Gigapixel","4K+ resolution enhancement"],["QA & export","Adobe Express","Batch format and channel export"]]},
-      campaign:  {label:"Campaign Hero Image",       tools:["Figma Weave","Adobe Firefly","Adobe Express"],    steps:[["Brief structuring","Figma Weave","Translate brief into prompt architecture"],["Concept generation","Adobe Firefly","IP-indemnified hero generation"],["Brand refinement","Adobe Firefly","Colour, consistency and retouching"],["Localisation","Adobe Express","Copy and sizing per market"]]},
-      social:    {label:"Social & Story Assets",     tools:["Adobe Firefly","Adobe Express"],                  steps:[["Template setup","Adobe Express","Brand-locked template library"],["Generative fill","Adobe Firefly","Background extension and fill"],["Copy integration","Adobe Express","Localised copy and overlays"],["Multi-format export","Adobe Express","Stories, Feed, Reels, Banners"]]},
-      video:     {label:"AI Video from Stills",      tools:["Figma Weave","Adobe Express"],                    steps:[["Still selection","Figma Weave","Curate and prep source stills"],["AI animation","Figma Weave","Animate into fashion motion"],["Motion refinement","Figma Weave","Loop, pacing and transitions"],["Edit and export","Adobe Express","Captions, music sync and output"]]},
-      loc:       {label:"Market Localisation",       tools:["Adobe Firefly","Figma Weave","Adobe Express"],    steps:[["Master asset","Adobe Firefly","Brand-safe master visual creation"],["Cultural adaptation","Adobe Firefly","Model and cultural adjustment"],["Copy & layout","Adobe Express","Localised text and formatting"],["Batch delivery","Adobe Express","All markets and formats"]]},
-      lookbook:  {label:"Look-book Production",      tools:["Figma Weave","Adobe Firefly","Adobe Express"],    steps:[["Mood board","Figma Weave","Seasonal visual architecture"],["Editorial generation","Adobe Firefly","AI lighting, looks and styling"],["Layout & typography","Adobe Express","Multi-page spread composition"],["Print and digital","Adobe Express","High-res PDF and web formats"]]},
-      "3drender":{label:"3D Garment Render",         tools:["Figma Weave","Adobe Firefly","Topaz Gigapixel"],  steps:[["CLO3D ingest","Figma Weave",".zprj files, POM and fabric simulation"],["Scene & lighting","Figma Weave","AI camera and set composition"],["Surface finishing","Adobe Firefly","Texture and fabric detail"],["Final upscale","Topaz Gigapixel","4K+ catalogue output"]]},
-      upscale:   {label:"Asset Upscaling & Cleanup", tools:["Topaz Gigapixel","Adobe Firefly"],                steps:[["Batch ingest","Topaz Gigapixel","Bulk import of legacy assets"],["AI upscaling","Topaz Gigapixel","Up to 6x with fabric detail"],["Artefact cleanup","Adobe Firefly","Generative defect retouching"],["Export","Adobe Express","Channel-spec formatted output"]]},
-      brief:     {label:"Creative Brief to Visual",  tools:["Figma Weave","Adobe Firefly"],                   steps:[["Brief parsing","Figma Weave","Extract mood, palette and refs"],["Mood board","Adobe Firefly","Reference imagery and palette"],["Concept frames","Adobe Firefly","Hero visuals for review"],["Presentation","Adobe Express","Formatted stakeholder deck"]]},
-      seasonal:  {label:"Seasonal Banner Suite",     tools:["Adobe Firefly","Adobe Express"],                  steps:[["Key visual","Adobe Firefly","Seasonal hero generation"],["Banner adaptation","Adobe Express","All digital placement sizes"],["Copy localisation","Adobe Express","Promo text and CTAs per market"],["QA and handoff","Adobe Express","Brand-checked CMS export"]]},
-      tryon:     {label:"Virtual Try-on",            tools:["Adobe Firefly","Figma Weave"],                    steps:[["SKU ingest","Figma Weave","Prepare product images and model reference"],["Model swap","Adobe Firefly","AI-driven model substitution"],["Fit refinement","Adobe Firefly","Garment drape and lighting correction"],["Export variants","Adobe Express","All sizes and formats for e-com"]]},
-      bgscene:   {label:"Background Generation",     tools:["Adobe Firefly","Topaz Gigapixel"],                steps:[["Subject isolation","Adobe Firefly","Precise AI background removal"],["Scene generation","Adobe Firefly","Lifestyle or studio background"],["Light matching","Adobe Firefly","Match subject lighting to scene"],["Upscale & export","Topaz Gigapixel","4K output for all placements"]]},
-      recolor:   {label:"Product Recoloring",        tools:["Adobe Firefly","Adobe Express"],                  steps:[["Hero asset prep","Adobe Express","Clean and normalise master product image"],["Colorway generation","Adobe Firefly","AI recoloring across all SKU variants"],["Consistency check","Adobe Firefly","Fabric texture and tone accuracy"],["Batch export","Adobe Express","All variants in channel-ready formats"]]},
-      crm:       {label:"Personalised CRM & Paid",   tools:["Figma Weave","Adobe Firefly","Adobe Express"],    steps:[["Audience segmentation","Figma Weave","Map creative variants to CRM segments"],["Dynamic asset gen.","Adobe Firefly","Personalised visuals per segment"],["Copy & CTA overlay","Adobe Express","Segment-specific messaging"],["Feed & CRM export","Adobe Express","Ad feed, email and push-ready output"]]},
-      shortads:  {label:"Short-form Motion Ads",     tools:["Figma Weave","Adobe Express"],                    steps:[["Brief to storyboard","Figma Weave","AI storyboard from campaign brief"],["Motion generation","Figma Weave","Animate stills into TikTok/Reels"],["Text & sound","Adobe Express","Captions, trending audio and transitions"],["Platform export","Adobe Express","9:16 optimised for TikTok and Reels"]]},
+      packshot: { label:"E-com Pack Shot", tools:["Adobe Firefly","Topaz Gigapixel","Adobe Express"], steps:[["Asset prep","Adobe Express","Remove backgrounds, normalise white balance"],["AI generation","Adobe Firefly","Product-on-white or styled set creation"],["Upscaling","Topaz Gigapixel","4K+ resolution enhancement"],["QA & export","Adobe Express","Batch format and channel export"]] },
+      campaign: { label:"Campaign Hero Image", tools:["Figma Weave","Adobe Firefly","Adobe Express"], steps:[["Brief structuring","Figma Weave","Translate brief into prompt architecture"],["Concept generation","Adobe Firefly","IP-indemnified hero generation"],["Brand refinement","Adobe Firefly","Colour, consistency and retouching"],["Localisation","Adobe Express","Copy and sizing per market"]] },
+      social: { label:"Social & Story Assets", tools:["Adobe Firefly","Adobe Express"], steps:[["Template setup","Adobe Express","Brand-locked template library"],["Generative fill","Adobe Firefly","Background extension and fill"],["Copy integration","Adobe Express","Localised copy and overlays"],["Multi-format export","Adobe Express","Stories, Feed, Reels, Banners"]] },
+      video: { label:"AI Video from Stills", tools:["Figma Weave","Adobe Express"], steps:[["Still selection","Figma Weave","Curate and prep source stills"],["AI animation","Figma Weave","Animate into fashion motion"],["Motion refinement","Figma Weave","Loop, pacing and transitions"],["Edit and export","Adobe Express","Captions, music sync and output"]] },
+      loc: { label:"Market Localisation", tools:["Adobe Firefly","Figma Weave","Adobe Express"], steps:[["Master asset","Adobe Firefly","Brand-safe master visual creation"],["Cultural adaptation","Adobe Firefly","Model and cultural adjustment"],["Copy & layout","Adobe Express","Localised text and formatting"],["Batch delivery","Adobe Express","All markets and formats"]] },
+      lookbook: { label:"Look-book Production", tools:["Figma Weave","Adobe Firefly","Adobe Express"], steps:[["Mood board","Figma Weave","Seasonal visual architecture"],["Editorial generation","Adobe Firefly","AI lighting, looks and styling"],["Layout & typography","Adobe Express","Multi-page spread composition"],["Print and digital","Adobe Express","High-res PDF and web formats"]] },
+      "3drender": { label:"3D Garment Render", tools:["Figma Weave","Adobe Firefly","Topaz Gigapixel"], steps:[["CLO3D ingest","Figma Weave",".zprj files, POM and fabric simulation"],["Scene & lighting","Figma Weave","AI camera and set composition"],["Surface finishing","Adobe Firefly","Texture and fabric detail"],["Final upscale","Topaz Gigapixel","4K+ catalogue output"]] },
+      upscale: { label:"Asset Upscaling & Cleanup", tools:["Topaz Gigapixel","Adobe Firefly"], steps:[["Batch ingest","Topaz Gigapixel","Bulk import of legacy assets"],["AI upscaling","Topaz Gigapixel","Up to 6× with fabric detail"],["Artefact cleanup","Adobe Firefly","Generative defect retouching"],["Export","Adobe Express","Channel-spec formatted output"]] },
+      brief: { label:"Creative Brief to Visual", tools:["Figma Weave","Adobe Firefly"], steps:[["Brief parsing","Figma Weave","Extract mood, palette and refs"],["Mood board","Adobe Firefly","Reference imagery and palette"],["Concept frames","Adobe Firefly","Hero visuals for review"],["Presentation","Adobe Express","Formatted stakeholder deck"]] },
+      seasonal: { label:"Seasonal Banner Suite", tools:["Adobe Firefly","Adobe Express"], steps:[["Key visual","Adobe Firefly","Seasonal hero generation"],["Banner adaptation","Adobe Express","All digital placement sizes"],["Copy localisation","Adobe Express","Promo text and CTAs per market"],["QA and handoff","Adobe Express","Brand-checked CMS export"]] },
+      tryon: { label:"Virtual Try-on", tools:["Adobe Firefly","Figma Weave"], steps:[["SKU ingest","Figma Weave","Prepare product images and model reference"],["Model swap","Adobe Firefly","AI-driven model substitution"],["Fit refinement","Adobe Firefly","Garment drape and lighting correction"],["Export variants","Adobe Express","All sizes and formats for e-com"]] },
+      bgscene: { label:"Background Generation", tools:["Adobe Firefly","Topaz Gigapixel"], steps:[["Subject isolation","Adobe Firefly","Precise AI background removal"],["Scene generation","Adobe Firefly","Lifestyle or studio background"],["Light matching","Adobe Firefly","Match subject lighting to scene"],["Upscale & export","Topaz Gigapixel","4K output for all placements"]] },
+      recolor: { label:"Product Recoloring", tools:["Adobe Firefly","Adobe Express"], steps:[["Hero asset prep","Adobe Express","Clean and normalise master product image"],["Colorway generation","Adobe Firefly","AI recoloring across all SKU variants"],["Consistency check","Adobe Firefly","Fabric texture and tone accuracy"],["Batch export","Adobe Express","All variants in channel-ready formats"]] },
+      crm: { label:"Personalised CRM & Paid", tools:["Figma Weave","Adobe Firefly","Adobe Express"], steps:[["Audience segmentation","Figma Weave","Map creative variants to CRM segments"],["Dynamic asset gen.","Adobe Firefly","Personalised visuals per segment"],["Copy & CTA overlay","Adobe Express","Segment-specific messaging"],["Feed & CRM export","Adobe Express","Ad feed, email and push-ready output"]] },
+      shortads: { label:"Short-form Motion Ads", tools:["Figma Weave","Adobe Express"], steps:[["Brief to storyboard","Figma Weave","AI storyboard from campaign brief"],["Motion generation","Figma Weave","Animate stills into TikTok/Reels"],["Text & sound","Adobe Express","Captions, trending audio and transitions"],["Platform export","Adobe Express","9:16 optimised for TikTok and Reels"]] },
     };
 
     const TOOL_SCORE = {
-      "Adobe Firefly":   {speed:88,quality:85,cost:72,ipSafety:98,fashionRealism:80,ease:90},
-      "Adobe Express":   {speed:92,quality:80,cost:85,ipSafety:98,fashionRealism:72,ease:95},
-      "Figma Weave":     {speed:85,quality:82,cost:80,ipSafety:90,fashionRealism:84,ease:88},
-      "Topaz Gigapixel": {speed:90,quality:93,cost:88,ipSafety:99,fashionRealism:90,ease:92},
+      "Adobe Firefly":   {speed:88,quality:85,cost:72,ipSafety:98,fashionRealism:80,ease:90,ip:true,api:true},
+      "Adobe Express":   {speed:92,quality:80,cost:85,ipSafety:98,fashionRealism:72,ease:95,ip:true,api:true},
+      "Figma Weave":     {speed:85,quality:82,cost:80,ipSafety:90,fashionRealism:84,ease:88,ip:true,api:true},
+      "Topaz Gigapixel": {speed:90,quality:93,cost:88,ipSafety:99,fashionRealism:90,ease:92,ip:true,api:true},
     };
     const AXES = [["speed","Speed"],["quality","Quality"],["cost","Cost eff."],["ipSafety","IP safety"],["fashionRealism","Fashion"],["ease","Ease"]];
 
-    // ════════════════════════════════════════════════════════
-    // IMAGE MODELS
-    // REQ 4: Adobe partner image models added (parity with video)
-    // REQ 3/4: COMPLIANT -> ENTERPRISE; Standalone -> AI Models
-    // REQ 6: url field on every model
-    // ════════════════════════════════════════════════════════
-    const IMG_STANDALONE = [
-      {id:"ex01",name:"MAI-Image-2-Efficient",   vendor:"Microsoft",  tag:"EFFICIENT",  type:"standalone", url:"https://azure.microsoft.com/en-us/products/ai-services/ai-image"},
-      {id:"ex02",name:"MAI-Image-2",             vendor:"Microsoft",  tag:"QUALITY",    type:"standalone", url:"https://azure.microsoft.com/en-us/products/ai-services/ai-image"},
-      {id:"ex03",name:"Gemini 3.1 Flash Image",  vendor:"Google",     tag:"FAST",       type:"standalone", url:"https://deepmind.google/technologies/gemini/"},
-      {id:"ex04",name:"Gemini 3 Pro Image",      vendor:"Google",     tag:"PRO",        type:"standalone", url:"https://deepmind.google/technologies/gemini/"},
-      {id:"ex05",name:"Imagen 4 Fast",           vendor:"Google",     tag:"BUDGET",     type:"standalone", url:"https://deepmind.google/technologies/imagen-4/"},
-      {id:"ex06",name:"Imagen 4 Ultra",          vendor:"Google",     tag:"PREMIUM",    type:"standalone", url:"https://deepmind.google/technologies/imagen-4/"},
-      {id:"ex07",name:"Midjourney Pro",          vendor:"Midjourney", tag:"CREATIVE",   type:"standalone", url:"https://www.midjourney.com"},
-      {id:"ex08",name:"GPT Image 2",             vendor:"OpenAI",     tag:"QUALITY",    type:"standalone", url:"https://openai.com/index/gpt-image-1"},
-      {id:"ex10",name:"LetzAI Pro",              vendor:"LetzAI",     tag:"FASHION",    type:"standalone", url:"https://letz.ai"},
-      {id:"ex11",name:"Flair AI",                vendor:"Flair AI",   tag:"FASHION",    type:"standalone", url:"https://flair.ai"},
-      {id:"ex12",name:"Microsoft Copilot (M365)",vendor:"Microsoft",  tag:"ENTERPRISE", type:"standalone", url:"https://www.microsoft.com/en-us/microsoft-365/copilot"},
-    ];
+    const IMAGE_MODELS = [
+      ["MAI-Image-2-Efficient","Microsoft","SPEED","~$0.026/img"],
+      ["MAI-Image-2","Microsoft","QUALITY","~$0.053/img"],
+      ["Imagen 4 Fast","Google","BUDGET","$0.02/img"],
+      ["Imagen 4 Ultra","Google","PREMIUM","$0.06/img"],
+      ["GPT-Image-1","OpenAI","QUALITY","~$0.04–$0.17/img"],
+      ["Adobe Firefly Image 4","Adobe","COMPLIANT","CC incl. / credits"],
+    ].map((m,i)=>({id:"img"+i,name:m[0],vendor:m[1],tag:m[2],pricing:m[3]}));
 
-    // REQ 4: Adobe image partners (parity with video Adobe group structure)
-    const IMG_ADOBE = [
-      {id:"exa01",name:"Adobe Firefly Image 4",vendor:"Adobe",                       tag:"ENTERPRISE", type:"adobe", url:"https://www.adobe.com/products/firefly.html"},
-      {id:"exa02",name:"Firefly Image 3",      vendor:"Adobe",                       tag:"ENTERPRISE", type:"adobe", url:"https://www.adobe.com/products/firefly.html"},
-      {id:"exa03",name:"Flux 1.1 Pro",         vendor:"Black Forest Labs via Adobe", tag:"QUALITY",    type:"adobe", url:"https://firefly.adobe.com"},
-      {id:"exa04",name:"Stable Image Ultra",   vendor:"Stability AI via Adobe",      tag:"QUALITY",    type:"adobe", url:"https://firefly.adobe.com"},
-      {id:"exa05",name:"Stable Diffusion 3",   vendor:"Stability AI via Adobe",      tag:"QUALITY",    type:"adobe", url:"https://firefly.adobe.com"},
-      {id:"exa06",name:"DALL\u00b73",          vendor:"OpenAI via Adobe",            tag:"QUALITY",    type:"adobe", url:"https://firefly.adobe.com"},
-    ];
+    const VIDEO_MODELS = [
+      ["Veo 3.1","Google DeepMind","PREMIUM","$0.15–$0.40/sec"],
+      ["Flair AI Video","Flair AI","FASHION","Free–$25/mo"],
+      ["Firefly Video","Adobe","COMPLIANT","CC Pro"],
+      ["Kling 2.5 Turbo","Kling via Adobe","SPEED","25–50 credits"],
+      ["Seedance 2.0","ByteDance / Weave","PREMIUM ✅","116–552 credits"],
+      ["Runway Gen-4.5","Runway / Weave","QUALITY ✅","70–140 credits"],
+    ].map((m,i)=>({id:"vid"+i,name:m[0],vendor:m[1],tag:m[2],pricing:m[3]}));
 
-    const IMG_FIGMA = [
-      {id:"fw01",name:"Flux 2 Max",               vendor:"Black Forest Labs / Figma Weave", tag:"IMAGE", type:"figma", url:"https://weave.figma.com"},
-      {id:"fw02",name:"Flux 2 Pro",               vendor:"Black Forest Labs / Figma Weave", tag:"IMAGE", type:"figma", url:"https://weave.figma.com"},
-      {id:"fw03",name:"Gemini 3.1 Nano Banana 2", vendor:"Google / Figma Weave",            tag:"IMAGE", type:"figma", url:"https://weave.figma.com"},
-      {id:"fw04",name:"Gemini 3 Nano Banana Pro",  vendor:"Google / Figma Weave",            tag:"IMAGE", type:"figma", url:"https://weave.figma.com"},
-      {id:"fw05",name:"Ideogram V3",               vendor:"Ideogram / Figma Weave",          tag:"IMAGE", type:"figma", url:"https://ideogram.ai"},
-      {id:"fw06",name:"Recraft V4",                vendor:"Recraft / Figma Weave",           tag:"IMAGE", type:"figma", url:"https://www.recraft.ai"},
-      {id:"fw07",name:"Seedream 4.5",              vendor:"ByteDance / Figma Weave",         tag:"IMAGE", type:"figma", url:"https://weave.figma.com"},
-      {id:"fw08",name:"Luma Photon",               vendor:"Luma AI / Figma Weave",           tag:"IMAGE", type:"figma", url:"https://lumalabs.ai"},
-      {id:"fw09",name:"Stable Diffusion 3.5",      vendor:"Stability AI / Figma Weave",      tag:"IMAGE", type:"figma", url:"https://stability.ai"},
-      {id:"fw10",name:"Bria 4B",                   vendor:"Bria AI / Figma Weave",           tag:"IMAGE", type:"figma", url:"https://bria.ai"},
-      {id:"fw11",name:"Nvidia Sana",               vendor:"Nvidia / Figma Weave",            tag:"IMAGE", type:"figma", url:"https://weave.figma.com"},
-    ];
-
-    const ALL_BENCH_MODELS = [...IMG_STANDALONE, ...IMG_ADOBE, ...IMG_FIGMA];
-
-    // ════════════════════════════════════════════════════════
-    // VIDEO MODELS
-    // REQ 3: COMPLIANT -> ENTERPRISE; Standalone -> AI Models; Adobe neutral
-    // REQ 6: url field
-    // ════════════════════════════════════════════════════════
-    const VID_STANDALONE = [
-      {id:"vex01",name:"Veo 3.1",             vendor:"Google DeepMind",  tag:"PREMIUM",    type:"standalone", url:"https://deepmind.google/technologies/veo/"},
-      {id:"vex02",name:"Sora 2",              vendor:"OpenAI",           tag:"QUALITY",    type:"standalone", url:"https://openai.com/sora"},
-      {id:"vex03",name:"Copilot Video",       vendor:"Microsoft",        tag:"ENTERPRISE", type:"standalone", url:"https://www.microsoft.com/en-us/microsoft-365/copilot"},
-      {id:"vex04",name:"Midjourney Video V1", vendor:"Midjourney",       tag:"CREATIVE",   type:"standalone", url:"https://www.midjourney.com"},
-      {id:"vex05",name:"Flair AI Video",      vendor:"Flair AI",         tag:"FASHION",    type:"standalone", url:"https://flair.ai"},
-      {id:"vex06",name:"Letz AI Video",       vendor:"Letz",             tag:"FASHION",    type:"standalone", url:"https://letz.ai"},
-    ];
-
-    const VID_ADOBE = [
-      {id:"vex07",name:"Firefly 4 Video Model",vendor:"Adobe",                       tag:"ENTERPRISE", type:"adobe", url:"https://www.adobe.com/products/firefly.html"},
-      {id:"vex08",name:"Kling 2.5 Turbo",      vendor:"Kling AI via Adobe Firefly", tag:"SPEED",      type:"adobe", url:"https://firefly.adobe.com"},
-      {id:"vex09",name:"Ray2",                 vendor:"Luma AI via Adobe Firefly",  tag:"QUALITY",    type:"adobe", url:"https://firefly.adobe.com"},
-      {id:"vex10",name:"Ray3",                 vendor:"Luma AI via Adobe Firefly",  tag:"QUALITY",    type:"adobe", url:"https://firefly.adobe.com"},
-      {id:"vex11",name:"Ray3 HDR",             vendor:"Luma AI via Adobe Firefly",  tag:"HDR",        type:"adobe", url:"https://firefly.adobe.com"},
-      {id:"vex12",name:"Ray3.14",              vendor:"Luma AI via Adobe Firefly",  tag:"QUALITY",    type:"adobe", url:"https://firefly.adobe.com"},
-      {id:"vex13",name:"Ray3 HDR.14",          vendor:"Luma AI via Adobe Firefly",  tag:"HDR",        type:"adobe", url:"https://firefly.adobe.com"},
-      {id:"vex14",name:"Runway Gen-4.5",       vendor:"Runway via Adobe Firefly",   tag:"QUALITY",    type:"adobe", url:"https://firefly.adobe.com"},
-      {id:"vex15",name:"Sora 2",               vendor:"OpenAI via Adobe Firefly",   tag:"QUALITY",    type:"adobe", url:"https://firefly.adobe.com"},
-      {id:"vex16",name:"Veo 2",                vendor:"Google via Adobe Firefly",   tag:"PREMIUM",    type:"adobe", url:"https://firefly.adobe.com"},
-      {id:"vex17",name:"Veo 3.1",              vendor:"Google via Adobe Firefly",   tag:"PREMIUM",    type:"adobe", url:"https://firefly.adobe.com"},
-      {id:"vex18",name:"Veo 3.1 Fast",         vendor:"Google via Adobe Firefly",   tag:"FAST",       type:"adobe", url:"https://firefly.adobe.com"},
-    ];
-
-    const VID_FIGMA = [
-      {id:"vfw01",name:"Veo 3.1",              vendor:"Google / Figma Weave",    tag:"VIDEO", type:"figma", url:"https://weave.figma.com"},
-      {id:"vfw02",name:"Veo 3",                vendor:"Google / Figma Weave",    tag:"VIDEO", type:"figma", url:"https://weave.figma.com"},
-      {id:"vfw03",name:"Sora 2",               vendor:"OpenAI / Figma Weave",    tag:"VIDEO", type:"figma", url:"https://weave.figma.com"},
-      {id:"vfw04",name:"Runway Gen 4.5 Video", vendor:"Runway / Figma Weave",    tag:"VIDEO", type:"figma", url:"https://runwayml.com"},
-      {id:"vfw05",name:"Kling 3",              vendor:"Kuaishou / Figma Weave",  tag:"VIDEO", type:"figma", url:"https://weave.figma.com"},
-      {id:"vfw06",name:"Kling 2.6 Pro",        vendor:"Kuaishou / Figma Weave",  tag:"VIDEO", type:"figma", url:"https://weave.figma.com"},
-      {id:"vfw07",name:"PixVerse 6",            vendor:"PixVerse / Figma Weave",  tag:"VIDEO", type:"figma", url:"https://pixverse.ai"},
-      {id:"vfw08",name:"Seedance 2.0",          vendor:"ByteDance / Figma Weave", tag:"VIDEO", type:"figma", url:"https://weave.figma.com"},
-      {id:"vfw09",name:"Minimax Hailuo 02",     vendor:"Minimax / Figma Weave",   tag:"VIDEO", type:"figma", url:"https://weave.figma.com"},
-      {id:"vfw10",name:"Luma Ray",              vendor:"Luma AI / Figma Weave",   tag:"VIDEO", type:"figma", url:"https://lumalabs.ai"},
-    ];
-
-    const ALL_VIDEO_MODELS = [...VID_STANDALONE, ...VID_ADOBE, ...VID_FIGMA];
-
-    // ── Video Criteria ────────────────────────────────────────────────────────
-    const VIDEO_CRITERIA = [
-      {id:"vc1",label:"Product Fidelity",weight:"25%",desc:"Color, texture, fit, logo accuracy",items:[{id:"vc1a",label:"Color accuracy"},{id:"vc1b",label:"Fabric texture fidelity"},{id:"vc1c",label:"Fit and garment shape accuracy"},{id:"vc1d",label:"Logo and print preservation"}]},
-      {id:"vc2",label:"Product-to-Video Accuracy",weight:"20%",desc:"How well a product image becomes a realistic video",items:[{id:"vc2a",label:"Product image fidelity in motion"},{id:"vc2b",label:"Realism of product on model"},{id:"vc2c",label:"Garment behaviour under movement"},{id:"vc2d",label:"Scene and context consistency"}]},
-      {id:"vc3",label:"Motion Quality",weight:"15%",desc:"Walking, fabric movement, camera motion, realism",items:[{id:"vc3a",label:"Natural walking and pose motion"},{id:"vc3b",label:"Fabric and drape movement"},{id:"vc3c",label:"Camera motion quality"},{id:"vc3d",label:"Overall visual realism"}]},
-      {id:"vc4",label:"Consistency",weight:"15%",desc:"Same garment, model, and scene across multiple shots",items:[{id:"vc4a",label:"Garment consistency across frames"},{id:"vc4b",label:"Model identity consistency"},{id:"vc4c",label:"Scene and background consistency"},{id:"vc4d",label:"Temporal coherence"}]},
-      {id:"vc5",label:"Brand & Content Safety",weight:"10%",desc:"No distortions, inappropriate content, legal risks",items:[{id:"vc5a",label:"Absence of visual distortions"},{id:"vc5b",label:"Brand-appropriate content"},{id:"vc5c",label:"IP and legal compliance"},{id:"vc5d",label:"Model safety and appropriateness"}]},
-      {id:"vc6",label:"Marketing Quality",weight:"10%",desc:"Would the brand team actually publish it?",items:[{id:"vc6a",label:"Commercial publication readiness"},{id:"vc6b",label:"Art direction and aesthetics"},{id:"vc6c",label:"Alignment with brand standards"}]},
-      {id:"vc7",label:"Production Efficiency",weight:"5%",desc:"Speed, cost, ease of use, scalability",items:[{id:"vc7a",label:"Generation speed"},{id:"vc7b",label:"Cost per video"},{id:"vc7c",label:"Ease of use and iteration"},{id:"vc7d",label:"Scalability at target volume"}]},
-    ];
-
-    // ── Image Criteria ────────────────────────────────────────────────────────
-    const BENCHMARK_CRITERIA = [
-      {id:"c1",label:"Product Fidelity",weight:"30%",items:[{id:"c1a",label:"Color accuracy"},{id:"c1b",label:"Print/logo preservation"},{id:"c1c",label:"Fabric texture preservation"},{id:"c1d",label:"Garment shape preservation"},{id:"c1e",label:"Detail retention (buttons, zippers, embroidery)"}]},
-      {id:"c2",label:"Model Photography",weight:"20%",items:[{id:"c2a",label:"Realism"},{id:"c2b",label:"Pose quality"},{id:"c2c",label:"Garment draping"},{id:"c2d",label:"Fit accuracy"},{id:"c2e",label:"Commercial photography quality"}]},
-      {id:"c3",label:"Editing Precision",weight:"15%",items:[{id:"c3a",label:"Background replacement"},{id:"c3b",label:"Recoloring"},{id:"c3c",label:"Object removal"},{id:"c3d",label:"Product preservation during edits"}]},
-      {id:"c4",label:"Collection Visualization",weight:"10%",items:[{id:"c4a",label:"Ability to render from sketch/CAD"},{id:"c4b",label:"Material interpretation"},{id:"c4c",label:"Fashion realism"}]},
-      {id:"c5",label:"Localization",weight:"10%",items:[{id:"c5a",label:"Cultural adaptation"},{id:"c5b",label:"Environmental adaptation"},{id:"c5c",label:"Consistent brand identity"}]},
-      {id:"c6",label:"Styling Generation",weight:"5%",items:[{id:"c6a",label:"Outfit coherence"},{id:"c6b",label:"Trend awareness"},{id:"c6c",label:"Brand fit"}]},
-      {id:"c7",label:"Campaign Creation",weight:"5%",items:[{id:"c7a",label:"Creativity"},{id:"c7b",label:"Art direction"},{id:"c7c",label:"Prompt adherence"}]},
-      {id:"c8",label:"Cost & Speed",weight:"5%",items:[{id:"c8a",label:"Generation time"},{id:"c8b",label:"Editing time"},{id:"c8c",label:"Cost per image"},{id:"c8d",label:"Scalability"}]},
-    ];
-
-    const BENCH_USE_CASES = [
-      {id:"bu01",label:"Product-to-Model Photography",desc:"Generate realistic model images from product packshots or ghost mannequins, reducing the need for physical photoshoots."},
-      {id:"bu02",label:"Virtual Photoshoot Creation",desc:"Place existing fashion products or models into different environments without reshooting."},
-      {id:"bu03",label:"Multi-Market Localization",desc:"Adapt campaign imagery for different countries and cultures while keeping the same product and brand identity."},
-      {id:"bu04",label:"Model Diversity at Scale",desc:"Show the same product on different body types, ages, genders, and ethnicities to improve representation."},
-      {id:"bu05",label:"Flat Lay to Lifestyle Generation",desc:"Transform flat-lay or packshot images into lifestyle and editorial-style fashion content."},
-      {id:"bu06",label:"AI Styling & Outfit Building",desc:"Create complete outfits and styling recommendations around a hero product."},
-      {id:"bu07",label:"Seasonal Campaign Generation",desc:"Generate Spring, Summer, Autumn, and Winter versions of campaigns without separate photoshoots."},
-      {id:"bu08",label:"Social Media Content Generation",desc:"Create platform-specific fashion content for Instagram, TikTok, Pinterest, Stories, and paid social campaigns."},
-      {id:"bu09",label:"Image Editing & Retouching",desc:"Edit existing fashion images by changing backgrounds, recoloring garments, removing objects, or improving quality."},
-      {id:"bu10",label:"Collection Visualization Before Sampling",desc:"Generate realistic product and campaign visuals from sketches, CADs, or tech packs before physical samples exist."},
-      {id:"bu11",label:"On-Figure E-commerce Generation",desc:"Create PDP-ready model images directly from product assets for use on e-commerce sites."},
-      {id:"bu12",label:"Campaign Concept Ideation",desc:"Rapidly generate mood boards, creative directions, and campaign concepts to support marketing and design teams."},
-    ];
-
-    const VIDEO_USE_CASES = [
-      {id:"vu01",label:"Product Image \u2192 Model Video",desc:"Transform a static product image into a realistic video of a model wearing the garment."},
-      {id:"vu02",label:"Product Image \u2192 Lifestyle Video",desc:"Place a product into a dynamic lifestyle scene that reflects the brand's aesthetic."},
-      {id:"vu03",label:"Campaign Image Animation",desc:"Animate existing campaign photos to create engaging video content."},
-      {id:"vu04",label:"Social Media Content Generation",desc:"Create short-form videos optimized for TikTok, Reels, Shorts, and paid social."},
-      {id:"vu05",label:"Multi-Shot Campaign Creation",desc:"Generate multiple consistent video shots from a single concept or asset."},
-      {id:"vu06",label:"Market Localization",desc:"Adapt video content for different countries, languages, and audiences."},
-      {id:"vu07",label:"Virtual Model & Casting Variations",desc:"Showcase products on different AI-generated models while preserving garment accuracy."},
-      {id:"vu08",label:"Lookbook & Collection Showcase",desc:"Create videos that present an entire collection or seasonal assortment."},
-      {id:"vu09",label:"E-commerce Video Generation",desc:"Automatically generate PDP/product-detail videos from existing product assets."},
-      {id:"vu10",label:"Creative Concept Development",desc:"Rapidly prototype campaign ideas and creative directions before production."},
-      {id:"vu11",label:"Video-to-Video Editing",desc:"Transform existing videos with new styles, backgrounds, or creative treatments."},
-      {id:"vu12",label:"Personalized Marketing Content",desc:"Generate tailored video variations for specific customer segments or channels."},
-    ];
-
-    const DAILY_VOLUMES       = ["1K imgs/day","5K imgs/day","10K imgs/day","50K imgs/day","100K imgs/day"];
-    const VIDEO_DAILY_VOLUMES = ["100 vids/day","500 vids/day","1K vids/day","5K vids/day"];
-
-    // ════════════════════════════════════════════════════════
-    // AI TOOLS LIBRARY
-    // REQ 5: filters = Image | Video | Platform | Post-Prod only
-    //        "AI" stripped from tool card titles in rendering
-    // REQ 6: url field on every tool
-    // ════════════════════════════════════════════════════════
-    // Format: [name, vendor, category(Image|Video|Platform|Post-Prod), capabilities, useCases, url]
     const TOOL_LIB = [
-      ["Adobe Firefly",           "Adobe",        "Image",     "IP-indemnified generation, Generative Fill, text-to-image/video, Creative Cloud integration.",        "E-com pack shots, background generation, recoloring, social assets.",                 "https://www.adobe.com/products/firefly.html"],
-      ["Adobe Express",           "Adobe",        "Image",     "Brand templates, resize, translate, background removal, multi-format export.",                        "Social media assets, banner suites, CRM creatives.",                                   "https://www.adobe.com/express/"],
-      ["Google Gemini",           "Google",       "Platform",  "Multimodal reasoning, Workspace integration, long context, automation.",                              "Brief structuring, localisation copy, creative analysis.",                             "https://gemini.google.com"],
-      ["Google Veo",              "Google",       "Video",     "Cinematic video generation, camera motion, image-to-video, Vertex AI.",                               "Lookbook films, campaign video, product motion.",                                      "https://deepmind.google/technologies/veo/"],
-      ["ChatGPT Images",          "OpenAI",       "Image",     "Prompt-adherent image generation, editing and inpainting.",                                           "Concept frames, mood boards, visual prototyping.",                                     "https://openai.com/chatgpt"],
-      ["Figma Weave",             "Figma Weave",  "Platform",  "Node-based creative canvas, multiple AI models, governance dashboard.",                               "End-to-end media pipelines, video from stills, 3D rendering.",                        "https://weave.figma.com"],
-      ["Topaz Gigapixel",         "Topaz Labs",   "Post-Prod", "Up to 6x upscaling, fabric-aware sharpening, batch processing.",                                     "Legacy upscaling, catalogue production, print-ready images.",                         "https://www.topazlabs.com/gigapixel"],
-      ["MAI-Image-2-Efficient",   "Microsoft",    "Image",     "Efficient text-to-image generation optimised for speed and cost at scale.",                           "High-volume e-com pack shots, batch product imagery, rapid iteration.",               "https://azure.microsoft.com/en-us/products/ai-services/ai-image"],
-      ["MAI-Image-2",             "Microsoft",    "Image",     "High-quality text-to-image with strong prompt adherence and detail retention.",                       "Campaign hero images, product visualisation, on-figure e-commerce.",                  "https://azure.microsoft.com/en-us/products/ai-services/ai-image"],
-      ["Gemini 3.1 Flash Image",  "Google",       "Image",     "Fast multimodal image generation via Google's Gemini 3.1 Flash architecture.",                        "Social assets, rapid prototyping, mood boards.",                                       "https://deepmind.google/technologies/gemini/"],
-      ["Gemini 3 Pro Image",      "Google",       "Image",     "Professional-grade image generation with advanced instruction following.",                             "Campaign concepts, collection visualisation, editorial imagery.",                      "https://deepmind.google/technologies/gemini/"],
-      ["Imagen 4 Fast",           "Google",       "Image",     "Speed-optimised Google Imagen 4 for high-throughput image production.",                               "Packshot pipelines, seasonal banner suites, batch e-com assets.",                     "https://deepmind.google/technologies/imagen-4/"],
-      ["Imagen 4 Ultra",          "Google",       "Image",     "Highest-quality Google Imagen 4 with photorealistic output and fine detail.",                         "Hero campaign images, lookbook photography, premium editorial.",                       "https://deepmind.google/technologies/imagen-4/"],
-      ["Midjourney Pro",          "Midjourney",   "Image",     "Highly aesthetic image generation with strong creative direction and style versatility.",              "Campaign ideation, mood boards, creative direction, editorial visuals.",               "https://www.midjourney.com"],
-      ["GPT Image 2",             "OpenAI",       "Image",     "Advanced text-to-image and image editing with high instruction adherence.",                           "Product visualisation, background editing, on-figure generation.",                    "https://openai.com/index/gpt-image-1"],
-      ["LetzAI Pro",              "LetzAI",       "Image",     "Fashion-focused image generation with brand consistency and garment fidelity.",                       "On-figure e-com, model photography, product-to-model conversion.",                    "https://letz.ai"],
-      ["Flair AI",                "Flair AI",     "Image",     "Image generation specialised for product and lifestyle photography.",                                  "Product packshots, lifestyle imagery, social media content.",                         "https://flair.ai"],
-      ["Microsoft Copilot (M365)","Microsoft",    "Platform",  "Microsoft 365-integrated content and image generation with enterprise governance.",                   "Internal creative, campaign ideation, social assets, localisation.",                  "https://www.microsoft.com/en-us/microsoft-365/copilot"],
-      ["Adobe Firefly Image 4",   "Adobe",        "Image",     "Latest Firefly generation with enhanced photorealism, garment detail, and IP indemnity.",             "On-figure e-com, product editing, campaign imagery, social assets.",                  "https://www.adobe.com/products/firefly.html"],
-      ["Firefly Image 3",         "Adobe",        "Image",     "Adobe Firefly Image 3 with improved composition, text rendering, and style control.",                 "Social content, banner suites, product visualisation.",                               "https://www.adobe.com/products/firefly.html"],
-      ["Flux 1.1 Pro",            "Adobe",        "Image",     "Black Forest Labs FLUX 1.1 Pro via Adobe Firefly — state-of-the-art prompt adherence.",              "Campaign hero images, lookbook imagery, editorial photography.",                       "https://firefly.adobe.com"],
-      ["Stable Image Ultra",      "Adobe",        "Image",     "Stability AI Stable Image Ultra via Adobe Firefly — premium photorealism.",                           "Product photography, lifestyle imagery, premium editorial.",                           "https://firefly.adobe.com"],
-      ["Stable Diffusion 3",      "Adobe",        "Image",     "Stability AI Stable Diffusion 3 via Adobe Firefly — versatile generation.",                           "Background generation, product visualisation, concept artwork.",                       "https://firefly.adobe.com"],
-      ["DALL\u00b73",             "Adobe",        "Image",     "OpenAI DALL·E 3 via Adobe Firefly — strong instruction following and creative output.",               "Concept frames, mood boards, campaign ideation.",                                     "https://firefly.adobe.com"],
-      ["Flux 2 Max",              "Figma Weave",  "Image",     "Top-tier FLUX image model via Figma Weave with maximum quality and detail.",                          "Premium editorial, campaign hero images, lookbook production.",                        "https://weave.figma.com"],
-      ["Flux 2 Pro",              "Figma Weave",  "Image",     "Professional FLUX image model with excellent prompt adherence and stylistic range.",                  "Campaign concepts, product photography, editorial styling.",                           "https://weave.figma.com"],
-      ["Gemini 3.1 Nano Banana 2","Figma Weave",  "Image",     "Google Gemini 3.1 image generation accessible via Figma Weave.",                                     "Rapid image generation, social assets, brief-to-visual workflows.",                    "https://weave.figma.com"],
-      ["Gemini 3 Nano Banana Pro", "Figma Weave", "Image",     "Google Gemini 3 Pro image generation accessible via Figma Weave.",                                   "Campaign imagery, product visualisation, collection mood boards.",                     "https://weave.figma.com"],
-      ["Ideogram V3",             "Figma Weave",  "Image",     "Ideogram V3 — strong text rendering and creative composition via Figma Weave.",                      "Social posts with text, banner designs, campaign concept frames.",                     "https://ideogram.ai"],
-      ["Recraft V4",              "Figma Weave",  "Image",     "Recraft V4 vector and raster image generation with design precision via Figma Weave.",               "Graphic design, brand assets, illustration, product mockups.",                         "https://www.recraft.ai"],
-      ["Seedream 4.5",            "Figma Weave",  "Image",     "ByteDance Seedream image generation with strong fashion and aesthetic quality via Figma Weave.",      "Fashion editorial, lifestyle imagery, campaign visualisation.",                        "https://weave.figma.com"],
-      ["Luma Photon",             "Figma Weave",  "Image",     "Luma AI fast, high-quality image generation via Figma Weave.",                                       "Product imagery, lifestyle scenes, rapid concept iteration.",                         "https://lumalabs.ai"],
-      ["Stable Diffusion 3.5",    "Figma Weave",  "Image",     "Stability AI Stable Diffusion 3.5 with advanced compositing and fine-tuning via Figma Weave.",       "Custom product imagery, background generation, garment visualisation.",                "https://stability.ai"],
-      ["Bria 4B",                 "Figma Weave",  "Image",     "Bria AI commercial-safe image generation with IP protection via Figma Weave.",                       "Commercial campaigns, e-com imagery, brand-safe product photography.",                 "https://bria.ai"],
-      ["Nvidia Sana",             "Figma Weave",  "Image",     "Nvidia Sana high-speed image synthesis with strong visual fidelity via Figma Weave.",                "High-throughput batch imagery, packshot pipelines, product visualisation.",            "https://weave.figma.com"],
-      ["Veo 3.1",                 "Google",       "Video",     "Google DeepMind state-of-the-art video generation with cinematic quality and precise motion control.","Product-to-model video, campaign animation, lifestyle video creation.",                "https://deepmind.google/technologies/veo/"],
-      ["Sora 2",                  "OpenAI",       "Video",     "OpenAI advanced video generation with high temporal consistency and creative direction.",             "Campaign film, creative concept development, lookbook animation.",                    "https://openai.com/sora"],
-      ["Copilot Video",           "Microsoft",    "Video",     "Microsoft 365-integrated video generation with enterprise content governance.",                       "Internal content, social video, campaign localisation.",                              "https://www.microsoft.com/en-us/microsoft-365/copilot"],
-      ["Midjourney Video V1",     "Midjourney",   "Video",     "Midjourney creative video generation with distinctive aesthetic quality.",                            "Creative concept videos, mood films, editorial animation.",                           "https://www.midjourney.com"],
-      ["Flair AI Video",          "Flair AI",     "Video",     "Fashion-focused video generation specialised for product and model content.",                         "Product-to-video, model videos, lifestyle video, social content.",                    "https://flair.ai"],
-      ["Letz AI Video",           "LetzAI",       "Video",     "Fashion-specialist video generation with garment accuracy and brand consistency.",                    "On-figure video, product detail videos, e-com video content.",                       "https://letz.ai"],
-      ["Firefly 4 Video Model",   "Adobe",        "Video",     "Adobe IP-indemnified video generation model within the Creative Cloud ecosystem.",                   "Campaign films, product videos, social content, lookbook animation.",                 "https://www.adobe.com/products/firefly.html"],
-      ["Kling 2.5 Turbo",         "Adobe",        "Video",     "Kling AI fast video generation via Adobe Firefly, optimised for speed and throughput.",              "High-volume social content, product video pipelines, rapid iteration.",               "https://firefly.adobe.com"],
-      ["Ray2",                    "Adobe",        "Video",     "Luma AI Ray2 video generation via Adobe Firefly with strong motion quality.",                        "Lifestyle video, product animation, campaign video content.",                         "https://firefly.adobe.com"],
-      ["Ray3",                    "Adobe",        "Video",     "Luma AI Ray3 video generation via Adobe Firefly with enhanced visual fidelity.",                     "Campaign films, editorial video, model video production.",                            "https://firefly.adobe.com"],
-      ["Ray3 HDR",                "Adobe",        "Video",     "Luma AI Ray3 HDR video via Adobe Firefly with high dynamic range output.",                           "Premium campaign video, hero films, broadcast-quality content.",                       "https://firefly.adobe.com"],
-      ["Ray3.14",                 "Adobe",        "Video",     "Luma AI Ray3.14 video via Adobe Firefly with fine-tuned motion accuracy.",                           "Product-to-video, model videos, collection showcase.",                                "https://firefly.adobe.com"],
-      ["Ray3 HDR.14",             "Adobe",        "Video",     "Luma AI Ray3 HDR.14 via Adobe Firefly combining HDR and fine-tuned motion.",                         "Broadcast campaign video, premium editorial, hero product films.",                    "https://firefly.adobe.com"],
-      ["Runway Gen-4.5",          "Adobe",        "Video",     "Runway Gen-4.5 video generation via Adobe Firefly with creative and narrative quality.",             "Campaign storytelling, creative concept video, fashion films.",                       "https://firefly.adobe.com"],
-      ["Veo 2",                   "Adobe",        "Video",     "Google Veo 2 video generation via Adobe Firefly ecosystem.",                                         "Product video, lifestyle animation, campaign imagery to video.",                      "https://firefly.adobe.com"],
-      ["Veo 3.1 Fast",            "Adobe",        "Video",     "Google Veo 3.1 Fast via Adobe Firefly — speed-optimised for high-throughput video production.",      "Batch video pipelines, social content, rapid campaign iteration.",                    "https://firefly.adobe.com"],
-      ["Veo 3",                   "Figma Weave",  "Video",     "Google Veo 3 video generation via Figma Weave with strong motion and temporal consistency.",          "Lookbook films, product-to-model video, campaign animation.",                         "https://weave.figma.com"],
-      ["Runway Gen 4.5 Video",    "Figma Weave",  "Video",     "Runway Gen 4.5 video model via Figma Weave with cinematic quality and creative control.",            "Fashion films, campaign stories, editorial animation.",                               "https://runwayml.com"],
-      ["Kling 3",                 "Figma Weave",  "Video",     "Kling 3 video generation via Figma Weave with high-fidelity garment motion.",                       "Product-to-model video, virtual try-on, e-com video assets.",                        "https://weave.figma.com"],
-      ["Kling 2.6 Pro",           "Figma Weave",  "Video",     "Kling 2.6 Pro video generation via Figma Weave with professional motion quality.",                   "Campaign video, on-figure video, social content at scale.",                           "https://weave.figma.com"],
-      ["PixVerse 6",              "Figma Weave",  "Video",     "PixVerse 6 high-quality video generation via Figma Weave.",                                          "Creative campaigns, short-form social, lifestyle video.",                             "https://pixverse.ai"],
-      ["Seedance 2.0",            "Figma Weave",  "Video",     "ByteDance Seedance 2.0 video generation via Figma Weave with strong fashion motion accuracy.",       "Fashion video, model casting variations, collection showcase.",                       "https://weave.figma.com"],
-      ["Minimax Hailuo 02",       "Figma Weave",  "Video",     "Minimax Hailuo 02 video generation via Figma Weave with smooth motion and scene consistency.",       "Product animation, lifestyle video, social media video content.",                     "https://weave.figma.com"],
-      ["Luma Ray",                "Figma Weave",  "Video",     "Luma AI Ray video generation via Figma Weave with photorealistic scene quality.",                    "Lifestyle scenes, campaign video, on-figure product video.",                          "https://lumalabs.ai"],
+      ["Adobe Firefly","Adobe","COMPLIANT","IP-indemnified generation, Generative Fill, text-to-image/video, Creative Cloud integration.","E-com pack shots, background generation, recoloring, social assets."],
+      ["Adobe Express AI","Adobe","COMPLIANT","Brand templates, resize, translate, background removal, multi-format export.","Social media assets, banner suites, CRM creatives."],
+      ["Google Gemini","Google","ENTERPRISE","Multimodal reasoning, Workspace integration, long context, automation.","Brief structuring, localisation copy, creative analysis."],
+      ["Google Veo","Google","PREMIUM","Cinematic video generation, camera motion, image-to-video, Vertex AI.","Lookbook films, campaign video, product motion."],
+      ["ChatGPT Images","OpenAI / ChatGPT","QUALITY","Prompt-adherent image generation, editing and inpainting.","Concept frames, mood boards, visual prototyping."],
+      ["Figma Weave","Figma Weave","PLATFORM","Node-based creative canvas, multiple AI models, governance dashboard.","End-to-end media pipelines, video from stills, 3D rendering."],
+      ["Topaz Gigapixel AI","Topaz Labs","SPECIALIST","Up to 6× upscaling, fabric-aware sharpening, batch processing.","Legacy upscaling, catalogue production, print-ready images."],
     ];
 
-    const LIB_FILTERS = ["All","Image","Video","Platform","Post-Prod"];
-
-    const TOOL_PRIORITY = [
-      "Adobe Firefly", "Adobe Express", "Figma Weave", "Google Gemini", "ChatGPT Images",
-      "Google Veo", "Sora 2", "Microsoft Copilot (M365)", "Copilot Video",
-      "Adobe Firefly Image 4", "Firefly 4 Video Model", "Veo 3.1", "Runway Gen-4.5", "Runway Gen 4.5 Video",
-      "GPT Image 2", "Imagen 4 Ultra", "MAI-Image-2", "MAI-Image-2-Efficient", "Imagen 4 Fast",
-      "Gemini 3 Pro Image", "Gemini 3.1 Flash Image", "Midjourney Pro", "Midjourney Video V1",
-      "Flux 2 Max", "Flux 2 Pro", "Flux 1.1 Pro", "Stable Image Ultra", "Stable Diffusion 3", "Stable Diffusion 3.5",
-      "DALL\u00b73", "Ideogram V3", "Recraft V4", "Seedream 4.5", "Luma Photon", "Bria 4B", "Nvidia Sana",
-      "Kling 3", "Kling 2.6 Pro", "Kling 2.5 Turbo", "Ray3 HDR", "Ray3", "Ray2", "Ray3.14", "Ray3 HDR.14",
-      "Veo 3", "Veo 3.1 Fast", "Veo 2", "PixVerse 6", "Seedance 2.0", "Minimax Hailuo 02", "Luma Ray",
-      "Flair AI", "Flair AI Video", "LetzAI Pro", "Letz AI Video", "Firefly Image 3",
-      "Gemini 3.1 Nano Banana 2", "Gemini 3 Nano Banana Pro", "Topaz Gigapixel"
-    ];
-
-    function rankedTools(list) {
-      return [...list].sort((a,b)=>{
-        const ai = TOOL_PRIORITY.indexOf(a[0]);
-        const bi = TOOL_PRIORITY.indexOf(b[0]);
-        const ar = ai === -1 ? 999 : ai;
-        const br = bi === -1 ? 999 : bi;
-        return ar - br;
-      });
+    function Divider({label, color="#0052CC"}) {
+      return <div className="divider"><span className="divider-badge" style={{color, background: color+"14", border: `1px solid ${color}35`}}>{label}</span><div className="divider-line" /></div>;
     }
-
-    // ════════════════════════════════════════════════════════
-    // ════════════════════════════════════════════════════════
-    // SHARED UTILITIES
-    // ════════════════════════════════════════════════════════
-    function Divider({label}) {
-      return <div className="divider">
-        <span className="divider-badge">{label}</span>
-        <div className="divider-line"/>
-      </div>;
-    }
-    function Pill({label,bg,fg}) {
-      return <span className="pill" style={{background:bg,color:fg}}>{label}</span>;
-    }
+    function Pill({label,bg,fg}) { return <span className="pill" style={{background:bg,color:fg}}>{label}</span>; }
     function scoreStyle(v) {
-      if(v>=85) return {background:"var(--bs-ok-l)",  color:"var(--bs-ok)"};
-      if(v>=70) return {background:"var(--bs-warn-l)",color:"var(--bs-warn)"};
-      return      {background:"var(--bs-risk-l)",color:"var(--bs-risk)"};
+      if (v >= 85) return {background:"#E1F5EE", color:"#085041"};
+      if (v >= 70) return {background:"#FEF3C7", color:"#633806"};
+      return {background:"#FAECE7", color:"#712B13"};
     }
 
-    function ModelCard({m, selected, toggle}) {
-      const isActive = selected.includes(m.id);
-      const isEnt = m.tag === "ENTERPRISE";
-      const tagBg    = isEnt ? "var(--bs-smoke)" : "var(--bs-fog)";
-      const tagColor = isEnt ? "var(--bs-black)"  : "var(--bs-mid)";
-      return <div className={"model-card "+(isActive?"active":"")} onClick={()=>toggle(m.id)}>
-        <div style={{display:"flex",justifyContent:"space-between",gap:8}}>
-          <div>
-            <strong style={{fontSize:12,color:"var(--bs-black)",fontWeight:600}}>{m.name}</strong>
-            <div style={{fontSize:10,color:"var(--bs-muted)",marginTop:2,letterSpacing:".02em"}}>{m.vendor}</div>
-          </div>
-          <span className={"check "+(isActive?"active":"")}>{isActive?"\u2713":""}</span>
-        </div>
-        <div style={{marginTop:7,display:"flex",alignItems:"center",gap:8,flexWrap:"wrap"}}>
-          <span className="tag" style={{background:tagBg,color:tagColor}}>{m.tag}</span>
-          {m.url && <a href={m.url} target="_blank" rel="noopener noreferrer" className="model-link" onClick={e=>e.stopPropagation()}>Learn more ↗</a>}
-        </div>
-      </div>;
-    }
-
-    function ModelsTabGeneric({standalone, adobe, figma, selected, toggle}) {
-      return <div className="bench-tab-content">
-        <Divider label="AI Models"/>
-        <div className="model-grid" style={{marginBottom:22}}>
-          {standalone.map(m=><ModelCard key={m.id} m={m} selected={selected} toggle={toggle}/>)}
-        </div>
-        <Divider label="Adobe Ecosystem Models"/>
-        <div className="model-grid" style={{marginBottom:22}}>
-          {adobe.map(m=><ModelCard key={m.id} m={m} selected={selected} toggle={toggle}/>)}
-        </div>
-        <Divider label="Figma Weave — Verified by Figma"/>
-        <div className="model-grid">
-          {figma.map(m=><ModelCard key={m.id} m={m} selected={selected} toggle={toggle}/>)}
-        </div>
-      </div>;
-    }
-    function CriteriaTabGeneric({criteria, selectedCriteria, toggleCriterion}) {
-      const toggleAll = (group) => {
-        const ids = group.items.map(i=>i.id);
-        const allSel = ids.every(id=>selectedCriteria.includes(id));
-        ids.forEach(id=>{
-          if(allSel && selectedCriteria.includes(id)) toggleCriterion(id);
-          if(!allSel && !selectedCriteria.includes(id)) toggleCriterion(id);
-        });
-      };
-      return <div className="bench-tab-content">
-        {criteria.map(group=>{
-          const allSel  = group.items.every(i=>selectedCriteria.includes(i.id));
-          const someSel = group.items.some(i=>selectedCriteria.includes(i.id));
-          return <div className="criteria-group" key={group.id}>
-            <div className="criteria-group-head" onClick={()=>toggleAll(group)}>
-              <div style={{display:"flex",alignItems:"center",gap:10}}>
-                <span className={"check "+(allSel?"active":"")}>{allSel?"✓":someSel?"–":""}</span>
-                <div>
-                  <span className="criteria-group-title">{group.label}</span>
-                  {group.desc && <span style={{fontSize:10,color:"#6B7280",marginLeft:8}}>{group.desc}</span>}
-                </div>
-              </div>
-              <span className="criteria-weight">{group.weight}</span>
-            </div>
-            <div className="criteria-items">
-              {group.items.map(item=><div key={item.id} className={"criteria-item "+(selectedCriteria.includes(item.id)?"active":"")} onClick={()=>toggleCriterion(item.id)}>
-                <span className={"check "+(selectedCriteria.includes(item.id)?"active":"")}>{selectedCriteria.includes(item.id)?"✓":""}</span>
-                {item.label}
-              </div>)}
-            </div>
-          </div>;
-        })}
-      </div>;
-    }
-
-    function UseCaseTabGeneric({useCases, selectedUseCase, setSelectedUseCase}) {
-      return <div className="bench-tab-content">
-        <div style={{fontSize:11,color:"#6b7280",marginBottom:12}}>Select one use case for this benchmark (single-select)</div>
-        <div className="bench-usecase-grid">
-          {useCases.map((uc,idx)=><div key={uc.id} className={"bench-usecase-item "+(selectedUseCase===uc.id?"active":"")} onClick={()=>setSelectedUseCase(selectedUseCase===uc.id?null:uc.id)}>
-            <span className={"radio-circle "+(selectedUseCase===uc.id?"active":"")}>{selectedUseCase===uc.id?"●":""}</span>
-            <div className="bench-usecase-text"><strong>{idx+1}. {uc.label}</strong><span>{uc.desc}</span></div>
-          </div>)}
-        </div>
-      </div>;
-    }
-
-    function ContextTab({dailyVolume, setDailyVolume, reviewerContext, setReviewerContext, volumes, placeholder}) {
-      const vols = volumes || DAILY_VOLUMES;
-      const ph   = placeholder || "Evaluating for an automated packshot pipeline across 3 brands. Speed and batch throughput are primary. IP safety critical — outputs used in EU advertising.";
-      return <div className="bench-tab-content">
-        <div className="context-section">
-          <div className="context-label">Expected Daily Volume</div>
-          <div className="volume-chips">{vols.map(v=><button key={v} className={"chip "+(dailyVolume===v?"active":"")} onClick={()=>setDailyVolume(v)}>{v}</button>)}</div>
-        </div>
-        <div className="context-section">
-          <div className="context-label">Additional Reviewer Context</div>
-          <textarea className="context-textarea" value={reviewerContext} onChange={e=>setReviewerContext(e.target.value)} placeholder={ph} rows={5}/>
-        </div>
-      </div>;
-    }
-
-    function buildImagePrompt(p) {
-      const modelNames  = p.selectedModels.length ? ALL_BENCH_MODELS.filter(m=>p.selectedModels.includes(m.id)).map(m=>`${m.name} (${m.vendor})`).join(", ") : "No models selected";
-      const ucObj       = BENCH_USE_CASES.find(u=>u.id===p.selectedUseCase);
-      const ucName      = ucObj ? `${ucObj.label}\n  "${ucObj.desc}"` : "No use case selected";
-      const criteria    = BENCHMARK_CRITERIA.map(g=>{const c=g.items.filter(i=>p.selectedCriteria.includes(i.id));return c.length?`  - ${g.label} (${g.weight}): ${c.map(x=>x.label).join(", ")}`:null;}).filter(Boolean).join("\n") || "  No criteria selected";
-      const vol         = p.dailyVolume || "Not specified";
-      const ctx         = p.reviewerContext.trim() || "None provided";
-      const results     = p.benchmarkResults&&p.benchmarkResults.length ? p.benchmarkResults.map((r,i)=>`  ${i+1}. ${r.name} — ${r.overall}/100`).join("\n") : "  Not yet run";
-      return `# Image Models Benchmark Prompt\n\nYou are an expert image model evaluator for fashion and e-commerce. Benchmark the models below against the specified use case and criteria.\n\n## Models\n${modelNames}\n\n## Use Case\n${ucName}\n\n## Criteria & Weights\n${criteria}\n\n## Volume\n${vol}\n\n## Reviewer Context\n${ctx}\n\n## Existing Results\n${results}\n\n## Instructions\n1. Score each criterion 0–100.\n2. Apply category weights to produce a final score per model.\n3. Flag models scoring below 60 in any category weighted >=15% as critical risk.\n4. Provide strengths, weaknesses, and recommended use cases per model.\n5. Rank all models and provide a Top Pick and Best Value recommendation.\n\n*Generated by GenAI Media Benchmark Tool — BESTSELLER Tech Creative Solutions*`;
-    }
-
-    function buildVideoPrompt(p) {
-      const modelNames  = p.selectedModels.length ? ALL_VIDEO_MODELS.filter(m=>p.selectedModels.includes(m.id)).map(m=>`${m.name} (${m.vendor})`).join("\n  - ") : "No models selected";
-      const ucObj       = VIDEO_USE_CASES.find(u=>u.id===p.selectedUseCase);
-      const ucName      = ucObj ? `${ucObj.label}\n  "${ucObj.desc}"` : "No use case selected";
-      const criteria    = VIDEO_CRITERIA.map(g=>{const c=g.items.filter(i=>p.selectedCriteria.includes(i.id));return c.length?`  - ${g.label} (${g.weight}): ${c.map(x=>x.label).join(", ")}`:null;}).filter(Boolean).join("\n") || "  No criteria selected";
-      const vol         = p.dailyVolume || "Not specified";
-      const ctx         = p.reviewerContext.trim() || "None provided";
-      const results     = p.benchmarkResults&&p.benchmarkResults.length ? p.benchmarkResults.map((r,i)=>`  ${i+1}. ${r.name} — ${r.overall}/100`).join("\n") : "  Not yet run";
-      return `# Video Models Benchmark Prompt\n\nYou are an expert video model benchmark evaluator for fashion, e-commerce, and brand marketing. Benchmark the selected models against the specified use case and criteria.\n\n## Selected Models\n  - ${modelNames}\n\n## Use Case\n${ucName}\n\n## Daily Volume\n${vol}\n\n## Reviewer Context\n${ctx}\n\n## Criteria & Weights\n${criteria}\n\n## Existing Results\n${results}\n\n## Instructions\n1. Score each criterion 1–10.\n2. Apply weights to produce a final score per model.\n3. Flag models below 6/10 in any category weighted >=15% as critical risk.\n4. Tie-break: (i) product fidelity, (ii) consistency, (iii) efficiency.\n5. Output: executive summary, ranked table, per-criterion scores, strengths/weaknesses, best for use case, best for scale, best for brand safety, risks, final recommendation, next test plan.\n\n*Generated by GenAI Media Benchmark Tool — BESTSELLER Tech Creative Solutions*`;
-    }
-
-    function CopyPromptTabGeneric({prompt, allModels, selectedModels, selectedCriteria, selectedUseCase, dailyVolume, useCases}) {
-      const [copied,setCopied] = useState(false);
-      const handleCopy = () => { navigator.clipboard.writeText(prompt).then(()=>{ setCopied(true); setTimeout(()=>setCopied(false),2000); }); };
-      const selM = allModels.filter(m=>selectedModels.includes(m.id));
-      const ucObj = useCases.find(u=>u.id===selectedUseCase);
-      return <div style={{padding:20}}>
-        <Divider label="Benchmark Configuration Summary"/>
-        <div style={{display:"flex",flexWrap:"wrap",gap:8,marginBottom:16}}>
-          <span className="pill" style={{background:"#EFF6FF",color:"#1D4ED8"}}>{selM.length>0?`${selM.length} models selected`:"No models selected"}</span>
-          <span className="pill" style={{background:"#F5F3FF",color:"#5B21B6"}}>{selectedCriteria.length>0?`${selectedCriteria.length} criteria selected`:"No criteria selected"}</span>
-          <span className="pill" style={{background:"#ECFDF5",color:"#065F46"}}>{ucObj?ucObj.label:"No use case selected"}</span>
-          {dailyVolume && <span className="pill" style={{background:"#FFF7ED",color:"#9A3412"}}>{dailyVolume}</span>}
-        </div>
-        <button className={"copy-btn"+(copied?" copied":"")} onClick={handleCopy}>{copied?"Copied to clipboard!":"Copy Benchmark Prompt"}</button>
-        <div className="prompt-box">{prompt}</div>
-      </div>;
-    }
-
-    // ════════════════════════════════════════════════════════
-    // BENCHMARK COMPONENT
-    // ════════════════════════════════════════════════════════
-    function Benchmark({kind}) {
-      const isImage = kind==="image";
-      const [selectedModels,setSelectedModels]     = useState([]);
-      const [selectedCriteria,setSelectedCriteria] = useState([]);
-      const [selectedUseCase,setSelectedUseCase]   = useState(null);
-      const [dailyVolume,setDailyVolume]           = useState(null);
-      const [reviewerContext,setReviewerContext]   = useState("");
-      const [benchmarkResults,setBenchmarkResults] = useState(null);
-      const [innerTab,setInnerTab]                 = useState("models");
-
-      const toggleModel     = id=>setSelectedModels(s=>s.includes(id)?s.filter(x=>x!==id):[...s,id]);
-      const toggleCriterion = id=>setSelectedCriteria(s=>s.includes(id)?s.filter(x=>x!==id):[...s,id]);
-
-      const allModels = isImage ? ALL_BENCH_MODELS : ALL_VIDEO_MODELS;
-      const imgAxes   = [["quality","Quality"],["speed","Speed"],["cost","Cost"],["ip","IP Safety"],["fashion","Fashion"],["enterprise","Enterprise"]];
-      const vidAxes   = [["fidelity","Fidelity"],["p2v","Product-to-Video"],["motion","Motion"],["consistency","Consistency"],["safety","Brand Safety"],["marketing","Marketing"]];
-      const axes = isImage ? imgAxes : vidAxes;
-
-      const runBenchmark = () => {
-        const chosen = allModels.filter(m=>selectedModels.includes(m.id));
-        const res = chosen.map((m,idx)=>{
-          const scores={};
-          axes.forEach((a,i)=>scores[a[0]]=Math.max(58,Math.min(98,84-idx*3+((m.name.length+i*7)%13)-6)));
-          const overall=Math.round(Object.values(scores).reduce((a,b)=>a+b,0)/axes.length);
-          return {...m,scores,overall};
-        }).sort((a,b)=>b.overall-a.overall);
-        setBenchmarkResults(res);
-        setInnerTab("results");
-      };
-
-      const innerTabs = [
-        {id:"models",  label:"Models"},
-        {id:"criteria",label:"Criteria"},
-        {id:"usecase", label:"Use case"},
-        {id:"context", label:"Context"},
-        {id:"results", label:"Benchmark Results"},
-        {id:"prompt",  label:"Copy Benchmark Prompt"},
-      ];
-
-      const p = {selectedModels,selectedCriteria,selectedUseCase,dailyVolume,reviewerContext,benchmarkResults};
-      const prompt = isImage ? buildImagePrompt(p) : buildVideoPrompt(p);
-
-      return <section>
-        <div style={{background:"white",border:"1px solid #e5e7eb",borderRadius:12,overflow:"hidden"}}>
-          <div style={{background:"white",borderBottom:"1px solid #e5e7eb",display:"flex",alignItems:"center",justifyContent:"space-between",padding:"0 20px",height:48}}>
-            <strong style={{fontSize:12}}>{isImage?"Image":"Video"} Models Benchmark Tool</strong>
-            <div style={{display:"flex",alignItems:"center",gap:8}}>
-              {selectedModels.length>0   && <span className="pill" style={{background:"#DBEAFE",color:"#1D4ED8"}}>{selectedModels.length} models</span>}
-              {selectedCriteria.length>0 && <span className="pill" style={{background:"#F5F3FF",color:"#5B21B6"}}>{selectedCriteria.length} criteria</span>}
-              {selectedUseCase           && <span className="pill" style={{background:"#ECFDF5",color:"#065F46"}}>use case</span>}
-              <button onClick={runBenchmark} disabled={!selectedModels.length} style={{background:selectedModels.length?C.blue:"#F3F4F6",color:selectedModels.length?"white":"#9CA3AF",border:0,borderRadius:7,padding:"8px 16px",fontWeight:900,cursor:selectedModels.length?"pointer":"not-allowed"}}>Benchmark Models</button>
-            </div>
-          </div>
-          <div className="bench-inner-tabs">
-            {innerTabs.map(t=><button key={t.id} className={"bench-inner-tab "+(innerTab===t.id?"active":"")} onClick={()=>setInnerTab(t.id)}>
-              {t.label}{t.id==="results"&&benchmarkResults?<span className="pill" style={{marginLeft:6,background:"#DCFCE7",color:"#166534",padding:"1px 6px",fontSize:9}}>done</span>:null}
-            </button>)}
-          </div>
-          {innerTab==="models" && (isImage
-            ? <ModelsTabGeneric standalone={IMG_STANDALONE} adobe={IMG_ADOBE} figma={IMG_FIGMA} selected={selectedModels} toggle={toggleModel}/>
-            : <ModelsTabGeneric standalone={VID_STANDALONE} adobe={VID_ADOBE} figma={VID_FIGMA} selected={selectedModels} toggle={toggleModel}/>
-          )}
-          {innerTab==="criteria" && (isImage
-            ? <CriteriaTabGeneric criteria={BENCHMARK_CRITERIA} selectedCriteria={selectedCriteria} toggleCriterion={toggleCriterion}/>
-            : <CriteriaTabGeneric criteria={VIDEO_CRITERIA}     selectedCriteria={selectedCriteria} toggleCriterion={toggleCriterion}/>
-          )}
-          {innerTab==="usecase" && (isImage
-            ? <UseCaseTabGeneric useCases={BENCH_USE_CASES}   selectedUseCase={selectedUseCase} setSelectedUseCase={setSelectedUseCase}/>
-            : <UseCaseTabGeneric useCases={VIDEO_USE_CASES}   selectedUseCase={selectedUseCase} setSelectedUseCase={setSelectedUseCase}/>
-          )}
-          {innerTab==="context" && <ContextTab dailyVolume={dailyVolume} setDailyVolume={setDailyVolume} reviewerContext={reviewerContext} setReviewerContext={setReviewerContext}
-            volumes={isImage?DAILY_VOLUMES:VIDEO_DAILY_VOLUMES}
-            placeholder={isImage?undefined:"Evaluating for an automated product video pipeline. Speed and brand consistency are primary."}
-          />}
-          {innerTab==="results" && <div style={{padding:24,minHeight:400}}>
-            {!benchmarkResults && <div style={{display:"flex",alignItems:"center",justifyContent:"center",flexDirection:"column",color:"#9CA3AF",textAlign:"center",minHeight:300}}>
-              <div style={{fontSize:36}}>+</div><strong>No benchmark yet</strong>
-              <div style={{fontSize:12}}>Select models and click Benchmark Models</div>
-            </div>}
-            {benchmarkResults && <>
-              <h2 style={{marginTop:0}}>Model Comparison Results</h2>
-              <p style={{fontSize:12,color:"#6B7280"}}>{benchmarkResults.length} models · {isImage?"Image":"Video"} · {dailyVolume||"volume not set"}</p>
-              {benchmarkResults.map((r,i)=><div className="result-card" key={r.id}>
-                <div className="result-head">
-                  <div><strong>{i+1}. {r.name}</strong><div style={{fontSize:10,color:"#6B7280"}}>{r.vendor}</div></div>
-                  <div style={{fontSize:22,fontWeight:900,color:r.overall>=80?C.green:C.amber}}>{r.overall}</div>
-                </div>
-                <div style={{padding:16,display:"grid",gridTemplateColumns:"1fr 1fr",gap:"10px 18px"}}>
-                  {axes.map(a=><div key={a[0]}>
-                    <div style={{display:"flex",justifyContent:"space-between",fontSize:10,color:"#6B7280",marginBottom:3}}><span>{a[1]}</span><strong>{r.scores[a[0]]}</strong></div>
-                    <div className="bar"><div style={{width:r.scores[a[0]]+"%",background:r.scores[a[0]]>=80?"#10B981":"#F59E0B"}}/></div>
-                  </div>)}
-                </div>
-                <div style={{margin:"0 16px 16px",background:"#F0FDF4",border:"1px solid #BBF7D0",borderRadius:8,padding:"8px 12px",fontSize:11,color:"#166534"}}>Best suited for fashion/e-commerce production with human QA and governance review.</div>
-              </div>)}
-            </>}
-          </div>}
-          {innerTab==="prompt" && <CopyPromptTabGeneric
-            prompt={prompt} allModels={allModels}
-            selectedModels={selectedModels} selectedCriteria={selectedCriteria}
-            selectedUseCase={selectedUseCase} dailyVolume={dailyVolume}
-            useCases={isImage?BENCH_USE_CASES:VIDEO_USE_CASES}
-          />}
-        </div>
-      </section>;
-    }
-
-    // ════════════════════════════════════════════════════════
-    // HEADER
-    // ════════════════════════════════════════════════════════
     function Header() {
       return <header className="header">
-        <div className="bs-wordmark">
-          <div className="bs-wordmark-main">BESTSELLER TECH</div>
-          <div className="bs-wordmark-sub">CREATIVE SOLUTIONS</div>
+        <div className="brand-mark">
+          <div className="brand-top"><strong>BESTSELLER</strong><span>TECH</span></div>
+          <div className="brand-sub">TECH CREATIVE SOLUTIONS</div>
         </div>
         <div className="hero-copy">
-          <div className="hero-title-stack">
-            <div className="bs-page-title">GenAI<span> Media</span></div>
-            <div className="workbench-title">Workbench</div>
+          <div className="hero-title"><span className="genai">GenAI</span><span className="media">Media</span></div>
+          <div className="hero-sub">Workflow &amp; Benchmark Tools</div>
+          <div className="hero-pills">
+            <span>AI WORKFLOW GUIDANCE</span><i className="sep" />
+            <span>AI MODELS COMPARISON</span><i className="sep" />
+            <span>AI TOOLS GOVERNANCE</span>
           </div>
         </div>
       </header>;
     }
 
-    // ANALYZER — Use Case → Workflow
     function Analyzer() {
-      const [brand,setBrand]   = useState(null);
+      const [brand,setBrand] = useState(null);
       const [market,setMarket] = useState("Global");
-      const [uc,setUC]         = useState("lookbook");
+      const [uc,setUC] = useState("lookbook");
       const w = WF[uc];
-      const stepColors = ["#1A1A1A","#3C3C3C","#6B6B6B","#9B9B9B"];
+      const colors = ["#6366F1","#10B981","#F59E0B","#EC4899"];
 
       return <main>
-        <section style={{marginBottom:32}}>
-          <Divider label="Brand"/>
-          {[0,7,14].map(start=><div className="grid-brands" key={start}>
-            {BRANDS.slice(start,start+7).map(b=><button key={b} className={"brand-btn "+(brand===b?"active":"")} onClick={()=>setBrand(brand===b?null:b)}>{b}</button>)}
+        <section style={{marginBottom:24}}>
+          <Divider label="Brand" color="#534AB7" />
+          {[0,7,14].map(start => <div className="grid-brands" key={start}>
+            {BRANDS.slice(start,start+7).map(b => <button key={b} className={"brand-btn "+(brand===b?"active":"")} onClick={()=>setBrand(brand===b?null:b)}>{b}</button>)}
           </div>)}
         </section>
-        <section style={{marginBottom:32}}>
-          <Divider label="Market"/>
-          <div className="chips">
-            {MARKETS.map(m=><button key={m} className={"chip "+(market===m?"market-active":"")} onClick={()=>setMarket(m)}>{m}</button>)}
-          </div>
+
+        <section style={{marginBottom:24}}>
+          <Divider label="Market" color="#534AB7" />
+          <div className="chips">{MARKETS.map(m => <button key={m} className={"chip "+(market===m?"active":"")} onClick={()=>setMarket(m)}>{m}</button>)}</div>
         </section>
-        <section style={{marginBottom:32}}>
-          <Divider label="Use Case"/>
-          <div className="use-grid">
-            {USE_CASES.map(u=><button key={u.id} className={"use-card "+(uc===u.id?"active":"")} onClick={()=>setUC(u.id)}>
-              <div className="use-title">{u.label}</div>
-              <div className="use-domain">{u.domain}</div>
-              <div className="use-desc">{u.desc}</div>
-            </button>)}
-          </div>
+
+        <section style={{marginBottom:24}}>
+          <Divider label="Use Case" color="#534AB7" />
+          <div className="use-grid">{USE_CASES.map(u => <button key={u.id} className={"use-card "+(uc===u.id?"active":"")} onClick={()=>setUC(u.id)}>
+            <div className="use-icon">{u.icon}</div><div className="use-title">{u.label}</div><div className="use-domain">{u.domain}</div><div className="use-desc">{u.desc}</div>
+          </button>)}</div>
         </section>
-        <nav className="sec-nav">
-          {["Workflow","Tools Benchmark Info","Workflow Tools Features","AI Tips","AI Legal Guidelines"].map(x=><button key={x} onClick={()=>document.getElementById(x).scrollIntoView({behavior:"smooth",block:"start"})}>{x}</button>)}
+
+        <nav className="nav">
+          {["Workflow","Tools Benchmark Info","Workflow Tools Features","AI Tips","AI Legal Guidelines"].map(x => <button key={x} onClick={() => document.getElementById(x).scrollIntoView({behavior:"smooth"})}>{x}</button>)}
         </nav>
+
         <section className="card" id="Workflow">
           <div className="workflow-head">
             <div className="eyebrow">Selected Workflow</div>
             <div className="workflow-title">{w.label}</div>
             <div>
-              {brand && <Pill label={brand} bg="var(--bs-fog)" fg="var(--bs-black)"/>}
-              {market!=="Global" && <Pill label={market} bg="var(--bs-signal-l)" fg="var(--bs-signal)"/>}
-              {w.tools.map(t=><Pill key={t} label={t} bg="var(--bs-smoke)" fg="var(--bs-charcoal)"/>)}
+              {brand && <Pill label={brand} bg="#EEEDFE" fg="#3C3489" />}
+              {market !== "Global" && <Pill label={market} bg="#E6F1FB" fg="#0C447C" />}
+              {w.tools.map(t => <Pill key={t} label={t} bg="#0052CC12" fg="#0052CC" />)}
             </div>
           </div>
           <div className="card-pad">
-            <Divider label="Workflow Steps"/>
+            <Divider label="Workflow Steps" />
             <div className="workflow-strip">
               <div className="steps">
-                {w.steps.map((s,i)=><React.Fragment key={s[0]}>
+                {w.steps.map((s,i) => <React.Fragment key={s[0]}>
                   <div className="step">
-                    <div className="step-bar" style={{background:stepColors[i%stepColors.length]}}/>
+                    <div className="step-bar" style={{background:colors[i%colors.length]}} />
                     <div className="step-body">
-                      <div className="step-badge" style={{background:"var(--bs-fog)",color:stepColors[i%stepColors.length]}}>STEP {i+1}</div>
+                      <div className="step-badge" style={{background:colors[i%colors.length]+"18",color:colors[i%colors.length]}}>STEP {i+1}</div>
                       <div className="step-name">{s[0]}</div>
-                      <div className="step-tool" style={{color:stepColors[i%stepColors.length]}}>{s[1]}</div>
+                      <div className="step-tool" style={{color:colors[i%colors.length]}}>{s[1]}</div>
                       <div className="step-desc">{s[2]}</div>
                     </div>
                   </div>
-                  {i<w.steps.length-1 && <div className="arrow">→</div>}
+                  {i < w.steps.length - 1 && <div className="arrow">→</div>}
                 </React.Fragment>)}
               </div>
             </div>
           </div>
         </section>
-        <section className="module-card" id="Tools Benchmark Info">
-          <div className="module-head">
-            <div><div className="module-head-sub">Performance Overview</div><div className="module-head-title">Tools Benchmark Info</div></div>
-            <div style={{display:"flex",gap:5,flexWrap:"wrap"}}>
-              {w.tools.map(t=><Pill key={t} label={t} bg="var(--bs-smoke)" fg="var(--bs-charcoal)"/>)}
-            </div>
-          </div>
-          <div className="module-body" style={{overflowX:"auto"}}>
+
+        <section className="card" id="Tools Benchmark Info"><div className="card-pad">
+          <Divider label="Tools Benchmark Info" color="#185FA5" />
+          <div style={{overflowX:"auto"}}>
             <table>
               <thead><tr><th>Tool</th>{AXES.map(a=><th key={a[0]}>{a[1]}</th>)}<th>IP</th><th>API</th></tr></thead>
-              <tbody>{w.tools.filter(t=>TOOL_SCORE[t]).map(t=>{
-                const d=TOOL_SCORE[t];
-                return <tr key={t}>
-                  <td style={{fontWeight:600,color:"var(--bs-black)"}}>{t}</td>
-                  {AXES.map(a=><td key={a[0]}><span className="score" style={scoreStyle(d[a[0]])}>{d[a[0]]}</span></td>)}
-                  <td style={{color:"var(--bs-ok)",fontWeight:700}}>✓</td>
-                  <td style={{color:"var(--bs-ok)",fontWeight:700}}>✓</td>
-                </tr>;
+              <tbody>{w.tools.filter(t=>TOOL_SCORE[t]).map(t => {
+                const d = TOOL_SCORE[t];
+                return <tr key={t}><td style={{fontWeight:800}}>{t}</td>{AXES.map(a=><td key={a[0]}><span className="score" style={scoreStyle(d[a[0]])}>{d[a[0]]}</span></td>)}<td style={{color:"#0F6E56",fontWeight:900}}>✓</td><td style={{color:"#0F6E56",fontWeight:900}}>✓</td></tr>;
               })}</tbody>
             </table>
           </div>
-        </section>
-        <section className="module-card" id="Workflow Tools Features">
-          <div className="module-head">
-            <div><div className="module-head-sub">Step-by-Step Guidance</div><div className="module-head-title">Workflow Tools Features</div></div>
-          </div>
-          <div className="module-body">
-            {w.steps.map((s,i)=><div className="feature-card" key={s[0]}>
-              <div className="feature-head">
-                <span className="step-badge" style={{background:"var(--bs-smoke)",color:stepColors[i%stepColors.length],margin:0}}>STEP {i+1}</span>
-                <strong style={{fontSize:12,color:"var(--bs-black)"}}>{s[0]}</strong>
-                <span style={{fontSize:10.5,color:"var(--bs-mid)",fontWeight:500}}>— {s[1]}</span>
-              </div>
-              <div className="feature-body">
-                <p style={{marginTop:0,marginBottom:10,color:"var(--bs-charcoal)"}}>{s[2]}. Use structured inputs, versioned prompts and human review to keep brand quality consistent.</p>
-                <ol style={{marginBottom:0,paddingLeft:18,lineHeight:1.8}}>
-                  <li>Define the intended output, target channel and brand constraints before generation.</li>
-                  <li>Save prompt, seed/model and source-file references for reproducibility.</li>
-                  <li>Review fabric, logos, hands/faces, scale, legal claims and final export specs.</li>
-                </ol>
-              </div>
-            </div>)}
-          </div>
-        </section>
-        <section className="module-card" id="AI Tips">
-          <div className="module-head">
-            <div><div className="module-head-sub">Best Practices</div><div className="module-head-title">AI Tips</div></div>
-          </div>
-          <div className="module-body">
-            <div className="tips-list">
-              <div className="tip-row"><div className="tip-label">Prompt Lab</div><div>Anchor {w.label} prompts in brand, season, lighting, camera and exclusion rules.</div></div>
-              <div className="tip-row"><div className="tip-label">Quality Risk</div><div>Review hands, fabric texture, logos, seams and scale before stakeholder sign-off.</div></div>
-              <div className="tip-row"><div className="tip-label">IP Governance</div><div>Use approved or indemnified models for {market}; avoid living artists, celebrities and protected marks.</div></div>
+        </div></section>
+
+        <section className="card" id="Workflow Tools Features"><div className="card-pad">
+          <Divider label="Workflow Tools Features" color="#059669" />
+          {w.steps.map((s,i) => <div className="feature-card" key={s[0]}>
+            <div className="feature-head" style={{background:colors[i%colors.length]+"08"}}>
+              <span className="step-badge" style={{background:colors[i%colors.length]+"20",color:colors[i%colors.length], margin:0}}>STEP {i+1}</span>
+              <strong>{s[0]}</strong><span style={{fontSize:10,color:colors[i%colors.length],fontWeight:800}}>— {s[1]}</span>
             </div>
-            <div style={{fontSize:10,color:"var(--bs-muted)",marginTop:12,letterSpacing:".04em"}}>Context: {brand||"Selected brand"} · {market}</div>
-          </div>
-        </section>
-        <section className="module-card" id="AI Legal Guidelines">
-          <div className="module-head">
-            <div><div className="module-head-sub">Governance Framework</div><div className="module-head-title">AI Legal Guidelines</div></div>
-          </div>
-          <div className="module-body">
-            <div className="legal-grid">
-              {[
-                {label:"Approved",     title:"To Go",           color:"var(--bs-ok)",    items:["Use approved tools and keep prompt/output records for auditability.","Apply human QA before commercial publication.",`Check local advertising and consumer-protection rules for ${market}.`]},
-                {label:"Prohibited",   title:"No Go",           color:"var(--bs-risk)",  items:["Do not upload confidential personal data into unapproved models.","Do not imitate living artists, celebrities or protected brand marks.","Do not publish outputs with unresolved copyright or model-release issues."]},
-                {label:"Best Practice",title:"Recommendations", color:"var(--bs-signal)",items:["Prefer indemnified models for campaign and paid-media work.","Route edge cases through Legal & Compliance before launch.","Maintain a market-specific asset manifest for delivery."]},
-              ].map(card=><div className="legal-card" key={card.title}>
-                <div className="legal-head">
-                  <div className="legal-head-label" style={{color:card.color}}>{card.label}</div>
-                  <div className="legal-head-title">{card.title}</div>
-                </div>
-                <div className="legal-body">
-                  {card.items.map((item,i)=><div className="legal-item" key={i}><span className="legal-dot" style={{background:card.color}}/><span>{item}</span></div>)}
-                </div>
-              </div>)}
+            <div className="feature-body">
+              <p style={{marginTop:0}}>{s[2]}. Use structured inputs, versioned prompts and human review to keep brand quality consistent.</p>
+              <ol style={{marginBottom:0,paddingLeft:18}}>
+                <li>Define the intended output, target channel and brand constraints before generation.</li>
+                <li>Save prompt, seed/model and source-file references for reproducibility.</li>
+                <li>Review fabric, logos, hands/faces, scale, legal claims and final export specs.</li>
+              </ol>
             </div>
-            <div className="notice">
-              <div className="notice-title">Governance &amp; Compliance Notice</div>
-              <p>This demo is intended for internal operational reference only and does not constitute formal legal advice. For binding compliance determinations or regulatory interpretation, consult BESTSELLER Legal &amp; Compliance.</p>
-            </div>
-          </div>
-        </section>
-      </main>;
-    }
-
-
-    // PROMPTING WORKFLOW
-    function Prompting() {
-      const [selectedBrand,setSelectedBrand] = useState(null);
-      const [selectedUseCase,setSelectedUseCase] = useState(null);
-      const [generationType,setGenerationType] = useState(null);
-      const [selectedModel,setSelectedModel] = useState("");
-      const [prompts,setPrompts] = useState([]);
-
-      const modelOptions = generationType==="Image" ? ALL_BENCH_MODELS : generationType==="Video" ? ALL_VIDEO_MODELS : [];
-      const useCase = USE_CASES.find(u=>u.id===selectedUseCase);
-      const model = modelOptions.find(m=>m.id===selectedModel);
-      const canGenerate = !!(selectedBrand && useCase && generationType && model);
-
-      const modelGuidance = (m,type) => {
-        const n = (m?.name || "").toLowerCase();
-        const v = (m?.vendor || "").toLowerCase();
-        if(n.includes("firefly") || v.includes("adobe")) return "clear commercial brief, brand-safe wording, precise edit instructions, no celebrity or protected-style references";
-        if(n.includes("midjourney")) return "strong art direction, concise visual language, editorial mood, camera and lighting cues";
-        if(n.includes("sora") || n.includes("veo") || n.includes("runway") || n.includes("ray")) return "temporal consistency, camera movement, duration, motion pacing, scene continuity and clear negative constraints";
-        if(n.includes("kling") || n.includes("seedance") || n.includes("pixverse")) return "garment motion, model pose, fabric behaviour, smooth transitions and realistic movement";
-        if(n.includes("imagen") || n.includes("gemini")) return "structured prompt sections, high instruction adherence, product fidelity and detailed composition";
-        if(n.includes("flux") || n.includes("stable")) return "photorealistic detail, material texture, lighting, controlled composition and negative prompt discipline";
-        return `${type.toLowerCase()} generation best practices, product fidelity, brand consistency and production-ready output details`;
-      };
-
-      const brandGuidance = (brand) => {
-        const guides = {
-          "JACK & JONES":"masculine denim culture, confident casualwear, youthful energy, authentic street style, rugged details and commercial attitude",
-          "VERO MODA":"accessible fashion, feminine confidence, effortless trends, contemporary styling, soft editorial elegance and everyday wearability",
-          "ONLY":"young, expressive, social-first fashion, playful confidence, trend-driven styling, denim attitude and bold commercial energy",
-          "Selected":"premium Scandinavian minimalism, refined tailoring, responsible quality, calm sophistication, understated luxury and modern essentials",
-          "name it":"playful kidswear, comfort, softness, durability, joyful color accents, practical styling and family-friendly warmth",
-          "PIECES":"fashion accessories, feminine details, trend accents, styling versatility, playful layering and affordable wardrobe updates",
-          "VILA":"feminine elegance, romantic modernity, soft silhouettes, refined details, calm confidence and occasion-ready styling",
-          ".OBJECT":"minimal contemporary womenswear, clean lines, muted palettes, thoughtful simplicity, architectural shapes and elevated everyday pieces",
-          "NOISY MAY":"edgy denim, rebellious youth culture, streetwear influence, confident styling, expressive attitude and casual cool",
-          "Y.A.S":"occasionwear, modern femininity, elegant dresses, premium detailing, confident celebration mood and refined glamour",
-          "MAMALICIOUS":"maternity comfort, confidence, softness, practical elegance, inclusive styling and supportive everyday fashion",
-          "ONLY & SONS":"young menswear, denim-led casual style, relaxed confidence, modern essentials and urban commercial energy",
-          "ONLY PLAY":"activewear energy, performance comfort, sporty confidence, dynamic movement, fresh colors and wellness lifestyle",
-          "JDY":"fast fashion, youthful affordability, casual trends, easy styling, high-volume retail practicality and social relevance",
-          "JJXX":"youth denim, expressive identity, relaxed streetwear, confident individuality, fresh styling and modern casual fashion",
-          "KIDS ONLY":"mini-me fashion, playful confidence, color, movement, comfort, trend-led kids styling and joyful attitude",
-          "ONLY CARMAKOMA":"inclusive womenswear, confident curves, flattering fit, modern femininity, body positivity and trend relevance",
-          "JUNAROSE":"curve-focused femininity, flattering silhouettes, confidence, comfort, versatile styling and accessible elegance",
-          "Lil' Atelier":"poetic childrenswear, natural textures, soft colors, Nordic calm, handcrafted feeling and delicate storytelling",
-          "LMTD":"tween fashion, expressive youth culture, casual confidence, trend-led styling, comfort and social energy",
-          "BALMOHK":"premium contemporary expression, refined fashion attitude, clean styling, modern confidence and distinctive visual edge"
-        };
-        return guides[brand] || "BESTSELLER brand DNA, commercial fashion relevance, product clarity, Nordic quality and market-ready styling";
-      };
-
-      const buildPrompts = () => {
-        if(!canGenerate) return;
-        const guidance = modelGuidance(model,generationType);
-        const brandDNA = brandGuidance(selectedBrand);
-        const baseContext = `${useCase.label} for ${selectedBrand} within BESTSELLER fashion retail. Brand direction: deeply reflect ${selectedBrand}'s style guide, DNA, values and spirit — ${brandDNA}. Use case context: ${useCase.desc}. Output type: ${generationType}. AI model: ${model.name} (${model.vendor}). Adapt for ${guidance}.`;
-        const isVideo = generationType === "Video";
-        const nextPrompts = [
-          `${baseContext}\n\nCreate a premium ${isVideo?"short fashion video":"fashion retail image"} featuring a hero garment from the current collection. Show the product with accurate color, fabric texture, fit, seams, trims, and scale. Use a clean Scandinavian editorial direction: neutral background, soft natural light, refined styling, calm composition, and commercial-ready polish. Keep the brand identity understated and modern. ${isVideo?"Camera: slow controlled movement, 6-8 seconds, smooth motion, stable model identity, realistic garment drape." : "Camera: 70mm editorial product photography, balanced framing, high-resolution e-commerce quality."} Avoid distorted hands, incorrect logos, broken garment construction, unrealistic fabric, over-styling, or distracting props.`,
-          `${baseContext}\n\nGenerate a market-ready concept for a fashion campaign asset. The visual should feel Nordic, minimal, premium, and commercially usable for online retail. Focus on the selected use case by making the product the clear hero while adding enough context to inspire purchase. Include precise styling notes: coordinated outfit, realistic proportions, subtle seasonal palette, natural skin texture, believable fabric behaviour, and consistent lighting. ${isVideo?"Use a simple shot structure: opening product reveal, model movement, close fabric/detail moment, final hero frame. Maintain temporal coherence and no garment morphing." : "Use a refined editorial layout with negative space suitable for copy overlay and responsive cropping."} Negative constraints: no extra limbs, no unreadable text, no brand-inappropriate elements, no celebrity likeness, no exaggerated body shape.`,
-          `${baseContext}\n\nProduce a practical production prompt for high-volume fashion retail usage. Prioritize consistency, repeatability, and QA-friendly output. The asset must be suitable for e-commerce, paid social, CRM, and campaign adaptation. Describe the garment accurately, preserve silhouette and construction, use realistic model posture, and keep the setting simple, elegant, and non-distracting. ${isVideo?"Motion requirements: natural walking or subtle pose transition, realistic fabric physics, stable background, stable face and body, no flicker, no warped garment details." : "Image requirements: photorealistic finish, crisp product detail, accurate shadow, clean background integration, natural pose and garment drape."} Add room for localization and copy-safe spacing. Avoid visual noise, legal risk, protected marks, and unrealistic fashion details.`
-        ];
-        setPrompts(nextPrompts);
-      };
-
-      const updatePrompt = (idx,value) => setPrompts(ps=>ps.map((p,i)=>i===idx?value:p));
-      const copyPrompt = (text) => navigator.clipboard.writeText(text);
-
-      return <main>
-        <section style={{marginBottom:32}}>
-          <Divider label="Brand"/>
-          {[0,7,14].map(start=><div className="grid-brands" key={start}>
-            {BRANDS.slice(start,start+7).map(b=><button key={b} className={"brand-btn "+(selectedBrand===b?"active":"")} onClick={()=>{setSelectedBrand(selectedBrand===b?null:b);setPrompts([]);}}>{b}</button>)}
           </div>)}
-        </section>
-        <section className="module-card">
-          <div className="module-head">
-            <div><div className="module-head-sub">Prompt Generation</div><div className="module-head-title">Fashion Retail Prompt Lab Workflow</div></div>
+        </div></section>
+
+        <section className="card" id="AI Tips"><div className="card-pad">
+          <Divider label="AI Tips" color="#7C3AED" />
+          <div className="tips">
+            <div>✨ <strong>Prompting:</strong> Anchor {w.label} prompts in brand, season, lighting, camera and exclusion rules.</div>
+            <div>🔎 <strong>Quality Risk:</strong> Review hands, fabric texture, logos, seams and scale before stakeholder sign-off.</div>
+            <div>⚖️ <strong>IP Governance:</strong> Use approved or indemnified models for {market}; avoid living artists, celebrities and protected marks.</div>
+            <div style={{fontSize:10,color:"#9CA3AF",marginTop:8}}>Context: {brand || "Selected brand"} · {market}</div>
           </div>
-          <div className="module-body">
-            <div className="context-section">
-              <div className="context-label">1. Use Case</div>
-              <div className="use-grid">
-                {USE_CASES.map(u=><button key={u.id} className={"use-card "+(selectedUseCase===u.id?"active":"")} onClick={()=>{setSelectedUseCase(u.id);setPrompts([]);}}>
-                  <div className="use-title">{u.label}</div>
-                  <div className="use-domain">{u.domain}</div>
-                  <div className="use-desc">{u.desc}</div>
-                </button>)}
-              </div>
-            </div>
-            <div className="context-section">
-              <div className="context-label">2. Generation Type</div>
-              <div className="chips">
-                {["Image","Video"].map(t=><button key={t} className={"chip "+(generationType===t?"active":"")} onClick={()=>{setGenerationType(t);setSelectedModel("");setPrompts([]);}}>{t}</button>)}
-              </div>
-            </div>
-            <div className="context-section">
-              <div className="context-label">3. AI Model</div>
-              <select value={selectedModel} disabled={!generationType} onChange={e=>{setSelectedModel(e.target.value);setPrompts([]);}} style={{width:"100%",border:"1px solid var(--bs-smoke)",borderRadius:"var(--r)",padding:"10px 14px",fontSize:13,color:"var(--bs-ink)",background:"var(--bs-white)",outline:"none"}}>
-                <option value="">{generationType ? `Select one ${generationType.toLowerCase()} model` : "Select generation type first"}</option>
-                {modelOptions.map(m=><option key={m.id} value={m.id}>{m.name} — {m.vendor}</option>)}
-              </select>
-            </div>
-            <button className="bench-run-btn" disabled={!canGenerate} onClick={buildPrompts}>Generate Prompts</button>
+        </div></section>
+
+        <section className="card" id="AI Legal Guidelines"><div className="card-pad">
+          <Divider label="AI Legal Guidelines" color="#DC2626" />
+          <div className="legal-grid">
+            <LegalCard title="To Go" subtitle="Approved practices" color="#166534" bg="#F0FDF4" border="#86EFAC" items={[
+              "Use approved tools and keep prompt/output records for auditability.",
+              "Apply human QA before commercial publication.",
+              `Check local advertising and consumer-protection rules for ${market}.`
+            ]} />
+            <LegalCard title="No Go" subtitle="Strictly prohibited" color="#991B1B" bg="#FFF1F2" border="#FCA5A5" items={[
+              "Do not upload confidential personal data into unapproved models.",
+              "Do not imitate living artists, celebrities or protected brand marks.",
+              "Do not publish outputs with unresolved copyright or model-release issues."
+            ]} />
+            <LegalCard title="Recommendations" subtitle="Best practice guidance" color="#1E40AF" bg="#EFF6FF" border="#93C5FD" items={[
+              "Prefer indemnified models for campaign and paid-media work.",
+              "Route edge cases through Legal & Compliance before launch.",
+              "Maintain a market-specific asset manifest for delivery."
+            ]} />
           </div>
-        </section>
-        {prompts.length>0 && <section className="module-card">
-          <div className="module-head">
-            <div><div className="module-head-sub">Ready to Copy</div><div className="module-head-title">Generated Prompts</div></div>
-            <div style={{display:"flex",gap:5,flexWrap:"wrap"}}>
-              <Pill label={selectedBrand} bg="var(--bs-fog)" fg="var(--bs-black)"/>
-              <Pill label={useCase.label} bg="var(--bs-fog)" fg="var(--bs-black)"/>
-              <Pill label={generationType} bg="var(--bs-smoke)" fg="var(--bs-charcoal)"/>
-              <Pill label={model.name} bg="var(--bs-signal-l)" fg="var(--bs-signal)"/>
-            </div>
+          <div className="notice">
+            <div className="notice-title">Governance &amp; Compliance Notice</div>
+            <p>This demo is intended for internal operational reference only and does not constitute formal legal advice. For binding compliance determinations or regulatory interpretation, consult BESTSELLER Legal & Compliance.</p>
           </div>
-          <div className="module-body">
-            {prompts.map((p,idx)=><div className="result-card" key={idx}>
-              <div className="result-head">
-                <strong>Prompt {idx+1}</strong>
-                <button className="bench-run-btn" onClick={()=>copyPrompt(p)}>Copy</button>
-              </div>
-              <div style={{padding:16}}>
-                <textarea className="context-textarea" value={p} onChange={e=>updatePrompt(idx,e.target.value)} rows={8}/>
-              </div>
-            </div>)}
-          </div>
-        </section>}
+        </div></section>
       </main>;
     }
 
-    // AI TOOLS LIBRARY
-    function Tools() {
-      const list = rankedTools(TOOL_LIB);
-      const tagStyle = (cat) => {
-        if(cat==="Image")     return {background:"var(--bs-signal-l)",color:"var(--bs-signal)"};
-        if(cat==="Video")     return {background:"var(--bs-warn-l)",  color:"var(--bs-warn)"};
-        if(cat==="Platform")  return {background:"var(--bs-smoke)",   color:"var(--bs-charcoal)"};
-        if(cat==="Post-Prod") return {background:"var(--bs-ok-l)",    color:"var(--bs-ok)"};
-        return {background:"var(--bs-smoke)",color:"var(--bs-charcoal)"};
-      };
-      return <main>
-        <div style={{fontSize:11,color:"var(--bs-muted)",marginBottom:16,letterSpacing:".04em"}}>{list.length} {list.length!==1?"tools":"tool"} shown · ordered by popularity, efficiency and creativity</div>
-        <div className="tool-grid">
-          {list.map((t,i)=><div className="tool-card" key={t[0]+"-"+i}>
-            <div className="tool-head">
-              <div style={{display:"flex",justifyContent:"space-between",gap:10,alignItems:"flex-start"}}>
-                <strong style={{fontSize:14.5,color:"var(--bs-black)",letterSpacing:"-.012em",lineHeight:1.25}}>{t[0]}</strong>
-                <span className="tag" style={tagStyle(t[2])}>{t[2]}</span>
-              </div>
-              <div style={{fontSize:11,color:"var(--bs-mid)",fontWeight:500,marginTop:5,letterSpacing:".02em"}}>{t[1]}</div>
-            </div>
-            <div style={{padding:"14px 18px",fontSize:12,color:"var(--bs-mid)",lineHeight:1.7}}>
-              <div style={{fontWeight:600,color:"var(--bs-charcoal)",marginBottom:3}}>Capabilities</div>
-              <div style={{marginBottom:12}}>{t[3]}</div>
-              <div style={{fontWeight:600,color:"var(--bs-charcoal)",marginBottom:3}}>Use cases</div>
-              <div>{t[4]}</div>
-            </div>
-            {t[5] && <div style={{padding:"0 18px 14px"}}>
-              <a href={t[5]} target="_blank" rel="noopener noreferrer" style={{fontSize:11,color:"var(--bs-signal-m)",fontWeight:500,textDecoration:"none",letterSpacing:".02em"}}>Learn more ↗</a>
-            </div>}
-          </div>)}
-        </div>
-      </main>;
-    }
-
-
-
-    // LOGIN ENTRY PAGE
-    function LoginPage({onLogin}) {
-      return <main className="login-page">
-        <section className="login-hero">
-          <div className="login-title-stack">
-            <div className="bs-page-title">GenAI<span> Media</span></div>
-            <div className="workbench-title">Workbench</div>
-          </div>
-          <div className="login-teaser">Optimize your AI-Powered Creativity</div>
-        </section>
-        <section className="login-card" aria-label="Login">
-          <div className="login-field">
-            <label className="login-label" htmlFor="user-id">User ID</label>
-            <input id="user-id" className="login-input" type="text" autoComplete="username" />
-          </div>
-          <div className="login-field">
-            <label className="login-label" htmlFor="password">Password</label>
-            <input id="password" className="login-input" type="password" autoComplete="current-password" />
-          </div>
-          <button className="login-button" type="button" onClick={onLogin}>Login</button>
-        </section>
-        <footer className="login-footer">BESTSELLER TECH Creative Solutions</footer>
-      </main>;
-    }
-
-        // APP
-    // ════════════════════════════════════════════════════════
-    function App() {
-      const [isLoggedIn,setIsLoggedIn] = useState(false);
-      const [page,setPage] = useState("analyzer");
-      const pages = [
-        ["analyzer","Use Case \u2192 Workflow"],
-        ["image","Image Models Benchmark"],
-        ["video","Video Models Benchmark"],
-        ["prompting","Prompt Lab"],
-        ["tools","AI Tools Library"],
-      ];
-      if(!isLoggedIn) return <LoginPage onLogin={()=>setIsLoggedIn(true)}/>;
-      return <div className="app">
-        <div className="nav-shell">
-          <Header/>
-          <div className="tabs">
-            {pages.map(p=><button key={p[0]} className={"tab "+(page===p[0]?"active":"")} onClick={()=>setPage(p[0])}>{p[1]}</button>)}
-          </div>
-        </div>
-        <div className="page-content">
-          {page==="analyzer" && <Analyzer/>}
-          {page==="image"    && <Benchmark kind="image"/>}
-          {page==="video"     && <Benchmark kind="video"/>}
-          {page==="prompting" && <Prompting/>}
-          {page==="tools"     && <Tools/>}
-        </div>
+    function LegalCard({title,subtitle,color,bg,border,items}) {
+      return <div className="legal-card" style={{background:bg,borderColor:border}}>
+        <div className="legal-head" style={{background:color}}><strong>{title}</strong><span>{subtitle}</span></div>
+        <div className="legal-body">{items.map((item,i)=><div className="legal-item" key={i}><span className="dot" style={{background:color}} /><span>{item}</span></div>)}</div>
       </div>;
     }
 
-    ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+    function Benchmark({kind}) {
+      const isImage = kind === "image";
+      const models = isImage ? IMAGE_MODELS : VIDEO_MODELS;
+      const axes = isImage
+        ? [["quality","Quality"],["speed","Speed"],["cost","Cost Eff."],["ip","IP Safety"],["fashion","Fashion"],["enterprise","Enterprise"]]
+        : [["motion","Motion"],["fashion","Fashion"],["prompt","Prompt"],["temporal","Temporal"],["control","Control"],["cost","Cost Eff."]];
+      const [selected,setSelected] = useState([]);
+      const [volume,setVolume] = useState(isImage ? 10000 : 500);
+      const [results,setResults] = useState(null);
+      const toggle = id => setSelected(s => s.includes(id) ? s.filter(x=>x!==id) : [...s,id]);
+      const run = () => {
+        const chosen = models.filter(m => selected.includes(m.id));
+        const res = chosen.map((m,idx) => {
+          const scores = {};
+          axes.forEach((a,i) => scores[a[0]] = Math.max(58, Math.min(98, 84 - idx*3 + ((m.name.length+i*7)%13)-6)));
+          const overall = Math.round(Object.values(scores).reduce((a,b)=>a+b,0)/axes.length);
+          return {...m, scores, overall};
+        }).sort((a,b)=>b.overall-a.overall);
+        setResults(res);
+      };
+      return <section className="bench-layout">
+        <div className="bench-top">
+          <strong style={{fontSize:12}}>AI {isImage ? "Image" : "Video"} Models Benchmark Tool</strong>
+          <div>
+            {selected.length > 0 && <span className="pill" style={{background:"#DBEAFE",color:"#1D4ED8"}}>{selected.length} selected</span>}
+            <button onClick={run} disabled={!selected.length} style={{background:selected.length?C.blue:"#F3F4F6",color:selected.length?"white":"#9CA3AF",border:0,borderRadius:7,padding:"8px 16px",fontWeight:900,cursor:selected.length?"pointer":"not-allowed"}}>➣ Benchmark AI Models</button>
+          </div>
+        </div>
+        <aside className="bench-side">
+          <div style={{fontSize:12,color:"#6B7280",marginBottom:14}}>Select models to benchmark</div>
+          <div className="model-grid">
+            {models.map(m => <div key={m.id} className={"model-card "+(selected.includes(m.id)?"active":"")} onClick={()=>toggle(m.id)}>
+              <div style={{display:"flex",justifyContent:"space-between",gap:8}}>
+                <div><strong style={{fontSize:11}}>{m.name}</strong><div style={{fontSize:10,color:"#0052CC",fontWeight:800,marginTop:2}}>{m.vendor}</div></div>
+                <span className={"check "+(selected.includes(m.id)?"active":"")}>{selected.includes(m.id)?"✓":""}</span>
+              </div>
+              <div style={{marginTop:7}}><span className="tag" style={{background:"#EFF6FF",color:"#1D4ED8",border:"1px solid #BFDBFE"}}>{m.tag}</span></div>
+              <div style={{fontSize:10,color:"#6B7280",marginTop:6}}>{m.pricing}</div>
+            </div>)}
+          </div>
+          <div style={{fontSize:12,fontWeight:800,margin:"20px 0 10px"}}>Daily volume</div>
+          <div className="chips">{(isImage?[1000,5000,10000,50000]:[100,500,1000,5000]).map(v => <button className={"chip "+(volume===v?"active":"")} onClick={()=>setVolume(v)} key={v}>{v>=1000 ? (v/1000)+"K" : v}/day</button>)}</div>
+          <div style={{fontSize:12,fontWeight:800,margin:"20px 0 10px"}}>Evaluation axes</div>
+          {axes.map(a => <div key={a[0]} style={{display:"flex",gap:10,alignItems:"center",fontSize:12,padding:"7px 0"}}><span className="check active">✓</span>{a[1]}</div>)}
+        </aside>
+        <main className="bench-main">
+          <div style={{height:44,background:"white",borderBottom:"1px solid #e5e7eb",display:"flex",alignItems:"center",padding:"0 20px",fontSize:11,color:"#6b7280"}}>Benchmark Results {results && <span className="pill" style={{marginLeft:8,background:"#DCFCE7",color:"#166534"}}>Complete</span>}</div>
+          <div className="bench-results">
+            {!results && <div style={{height:"100%",display:"flex",alignItems:"center",justifyContent:"center",flexDirection:"column",color:"#9CA3AF",textAlign:"center"}}><div style={{fontSize:36}}>＋</div><strong>No benchmark yet</strong><div style={{fontSize:12}}>Select models and click Benchmark AI Models</div></div>}
+            {results && <>
+              <h2 style={{marginTop:0}}>Model Comparison Results</h2>
+              <p style={{fontSize:12,color:"#6B7280"}}>{results.length} models · {isImage?"Image":"Video"} · {volume} units/day</p>
+              {results.map((r,i) => <div className="result-card" key={r.id}>
+                <div className="result-head">
+                  <div><strong>{i+1}. {r.name}</strong><div style={{fontSize:10,color:"#6B7280"}}>{r.vendor} · current</div></div>
+                  <div style={{fontSize:22,fontWeight:900,color:r.overall>=80?C.green:C.amber}}>{r.overall}</div>
+                </div>
+                <div style={{padding:16,display:"grid",gridTemplateColumns:"1fr 1fr",gap:"10px 18px"}}>
+                  {axes.map(a => <div key={a[0]}>
+                    <div style={{display:"flex",justifyContent:"space-between",fontSize:10,color:"#6B7280",marginBottom:3}}><span>{a[1]}</span><strong>{r.scores[a[0]]}</strong></div>
+                    <div className="bar"><div style={{width:r.scores[a[0]]+"%",background:r.scores[a[0]]>=80?"#10B981":"#F59E0B"}} /></div>
+                  </div>)}
+                </div>
+                <div style={{margin:"0 16px 16px",background:"#F0FDF4",border:"1px solid #BBF7D0",borderRadius:8,padding:"8px 12px",fontSize:11,color:"#166534"}}>💡 Best suited for fashion production with human QA and governance review.</div>
+              </div>)}
+            </>}
+          </div>
+        </main>
+      </section>;
+    }
+
+    function Tools() {
+      const [filter,setFilter] = useState("All");
+      const filters = ["All","Adobe","Google","OpenAI / ChatGPT","Figma Weave","Topaz Labs"];
+      const list = TOOL_LIB.filter(t => filter==="All" || t[1] === filter);
+      return <main>
+        <Divider label="Filter" />
+        <div className="chips" style={{marginBottom:24}}>{filters.map(f=><button className={"chip "+(filter===f?"active":"")} key={f} onClick={()=>setFilter(f)}>{f}</button>)}</div>
+        <div className="tool-grid">{list.map(t => <div className="tool-card" key={t[0]}>
+          <div className="tool-head">
+            <div style={{display:"flex",justifyContent:"space-between",gap:10}}>
+              <strong>{t[0]}</strong><span className="tag" style={{background:"#ECFDF5",color:"#065F46",border:"1px solid #A7F3D0"}}>{t[2]}</span>
+            </div>
+            <div style={{fontSize:11,color:"#0052CC",fontWeight:800,marginTop:7}}>{t[1]}</div>
+          </div>
+          <div style={{padding:16,fontSize:12,color:"#6B7280",lineHeight:1.7}}>
+            <strong style={{color:"#111827"}}>Capabilities:</strong><br />{t[3]}<br /><br />
+            <strong style={{color:"#111827"}}>Use cases:</strong><br />{t[4]}
+          </div>
+        </div>)}</div>
+      </main>;
+    }
+
+    function App() {
+      const [page,setPage] = useState("analyzer");
+      const pages = [
+        ["analyzer","Use Case → Workflow"],
+        ["image","AI Image Models Benchmark"],
+        ["video","AI Video Models Benchmark"],
+        ["tools","AI Tools Library"],
+      ];
+      return <div className="app">
+        <Header />
+        <div className="tabs">{pages.map(p => <button key={p[0]} className={"tab "+(page===p[0]?"active":"")} onClick={()=>setPage(p[0])}>{p[1]}</button>)}</div>
+        {page === "analyzer" && <Analyzer />}
+        {page === "image" && <Benchmark kind="image" />}
+        {page === "video" && <Benchmark kind="video" />}
+        {page === "tools" && <Tools />}
+      </div>;
+    }
+
+    ReactDOM.createRoot(document.getElementById("root")).render(<App />);
   </script>
 </body>
 </html>
